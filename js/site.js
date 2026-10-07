@@ -19,7 +19,7 @@
   var NAV = [
     { href: 'index.html', label: 'Home', id: 'home' },
     { href: 'about.html', label: 'About', id: 'about' },
-    { href: 'models.html', label: 'Models', id: 'models' },
+    { href: 'ladies.html', label: 'Ladies', id: 'models' },
     { href: 'roster.html', label: 'Roster & Hours', id: 'roster' },
     { href: 'rates.html', label: 'Rates', id: 'rates' },
     { href: 'faq.html', label: 'FAQ', id: 'faq' },
@@ -80,7 +80,7 @@
             '<h3>Explore</h3>' +
             '<ul>' +
               '<li><a href="about.html">About Us</a></li>' +
-              '<li><a href="models.html">Models</a></li>' +
+              '<li><a href="ladies.html">Ladies</a></li>' +
               '<li><a href="roster.html">Roster &amp; Hours</a></li>' +
               '<li><a href="rates.html">Rates &amp; Services</a></li>' +
               '<li><a href="house-rules.html">House Rules</a></li>' +
@@ -195,7 +195,7 @@
   }
 
   function renderRoster(el) {
-    var head = '<tr><th scope="col">Model</th>' + DAYS.map(function (d) {
+    var head = '<tr><th scope="col">Lady</th>' + DAYS.map(function (d) {
       return '<th scope="col"' + (d === TODAY ? ' class="is-today"' : '') + '>' + d + '</th>';
     }).join('') + '</tr>';
     var rows = MODELS.map(function (m) {

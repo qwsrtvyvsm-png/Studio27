@@ -105,8 +105,8 @@ ul { padding: 0; list-style: none; }
   font-family: var(--font-serif);
   font-style: italic;
   font-weight: 500;
-  text-transform: none;
-  letter-spacing: 0;
+  text-transform: inherit;   /* same capitals as the rest of the heading */
+  letter-spacing: .03em;
   font-size: 1.1em;
 }
 .h2 {
@@ -210,6 +210,8 @@ ul { padding: 0; list-style: none; }
   width: 44px; height: 44px;
   border: 1px solid var(--gold); border-radius: 50%;
   font-family: var(--font-serif); font-size: 22px; font-weight: 500; font-style: italic;
+  line-height: 1; padding-bottom: 1px; letter-spacing: -.02em; text-indent: -.02em;
+  font-variant-numeric: lining-nums;   /* old-style numerals drop the 7 below the line and look off-centre */
   color: var(--gold-light);
   box-shadow: 0 0 18px -4px rgba(230, 78, 163, .6), inset 0 0 12px -6px var(--gold);
 }
@@ -257,39 +259,62 @@ ul { padding: 0; list-style: none; }
 .section-head.center { margin-left: auto; margin-right: auto; }
 .section-head p:not(.eyebrow) { color: var(--muted); }
 
-/* ---------- Home hero ---------- */
+/* ---------- Home hero ----------
+   Three deliberate areas, stacked so nothing covers anything else:
+   TOP    = sticky header (floats over the top of the hero)
+   CENTRE = .hero__stage, the logo artwork, always shown whole (never cropped or stretched)
+   BOTTOM = .hero__dock, the address / phone / hours + buttons                          */
 .hero {
+  --dock-h: 210px;            /* approx. height of the dock, used to size the artwork */
   position: relative;
   margin-top: calc(var(--header-h) * -1);
-  padding: calc(var(--header-h) + 60px) 0 90px;
-  min-height: 100vh;
-  display: flex; align-items: center;
+  display: flex; flex-direction: column; align-items: center;
+  overflow: hidden;
 }
-.hero__grid { display: grid; grid-template-columns: 1fr 1.1fr; gap: 64px; align-items: center; }
-.hero__copy .display { font-size: clamp(2.2rem, 4.8vw, 3.9rem); margin-bottom: 8px; }
-.hero__copy .script { margin-bottom: 24px; }
-.hero__copy p.lead { color: var(--muted); max-width: 30em; margin-bottom: 30px; }
-.hero__address {
-  display: flex; align-items: flex-start; gap: 12px;
-  padding: 16px 0; margin-bottom: 30px;
-  border-top: 1px solid var(--line); border-bottom: 1px solid var(--line);
-  font-size: 13px; letter-spacing: .04em;
+.hero__stage {
+  position: relative; width: 100%;
+  min-height: max(500px, calc(100vh - var(--dock-h)));
+  min-height: max(500px, calc(100svh - var(--dock-h)));
+  display: grid; grid-template-columns: minmax(0, 1fr); place-items: center;
+  padding: calc(var(--header-h) + 12px) 16px 20px;
+  /* interior only (no logo baked in); focus right so the pink hallway stays in view */
+  background:
+    radial-gradient(ellipse 55% 60% at 50% 52%, rgba(10, 6, 8, .38), transparent 75%),
+    linear-gradient(180deg, rgba(10, 6, 8, .55) 0, rgba(10, 6, 8, 0) 22%),
+    url('../images/hero-bg.jpg') 72% center / cover no-repeat,
+    var(--black);
 }
-.hero__address svg { flex: none; margin-top: 3px; color: var(--pink); }
-.hero__address small { display: block; color: var(--muted); letter-spacing: .1em; text-transform: uppercase; font-size: 10px; margin-top: 2px; }
-.hero__frame {
-  position: relative;
-  border: 1px solid var(--line);
-  padding: 10px;
-  background: linear-gradient(135deg, rgba(212, 165, 74, .25), rgba(176, 24, 111, .25));
-  box-shadow: 0 40px 80px -30px rgba(0, 0, 0, .9), 0 0 80px -30px rgba(230, 78, 163, .6);
+.hero__logo {
+  position: relative; z-index: 1;
+  display: block; height: auto; aspect-ratio: 3 / 2; object-fit: contain;
+  /* wide enough to dominate, capped so it never exceeds the space between header and dock */
+  width: min(clamp(320px, 58vw, 860px), calc((100svh - var(--header-h) - var(--dock-h) - 40px) * 1.5));
+  min-width: min(100%, 360px);
+  filter: drop-shadow(0 18px 40px rgba(0, 0, 0, .55));
 }
-.hero__frame::before, .hero__frame::after {
-  content: ''; position: absolute; width: 46px; height: 46px; border: 1px solid var(--gold);
+.hero__dock {
+  position: relative; width: 100%; margin-top: 10px;
+  background: linear-gradient(180deg, rgba(34, 12, 28, .72), rgba(10, 6, 8, .86));
+  -webkit-backdrop-filter: blur(14px); backdrop-filter: blur(14px);
+  border-top: 1px solid transparent;
+  border-image: linear-gradient(90deg, transparent, var(--gold) 20%, var(--gold-light) 50%, var(--gold) 80%, transparent) 1;
+  box-shadow: 0 -24px 60px -30px rgba(230, 78, 163, .35);
 }
-.hero__frame::before { top: -10px; left: -10px; border-right: 0; border-bottom: 0; }
-.hero__frame::after { bottom: -10px; right: -10px; border-left: 0; border-top: 0; }
-.hero__frame img { width: 100%; aspect-ratio: 3 / 2; object-fit: cover; }
+.hero__dock-inner { display: flex; flex-direction: column; align-items: center; gap: 22px; padding-top: 28px; padding-bottom: 34px; }
+.dock__info { display: flex; flex-wrap: wrap; justify-content: center; gap: 10px 0; font-size: 13px; letter-spacing: .05em; color: var(--text); }
+.dock__info li { display: flex; align-items: center; gap: 10px; padding: 0 28px; }
+.dock__info li + li { border-left: 1px solid var(--line); }
+.dock__info svg { flex: none; color: var(--pink); }
+.dock__info a { color: var(--gold-light); font-weight: 600; letter-spacing: .08em; }
+.dock__info a:hover { color: var(--pink); }
+.hero__dock .btn-row { justify-content: center; }
+
+/* Header branding: compact so the hero logo stays the primary brand element */
+.site-header .brand__mark { width: 34px; height: 34px; font-size: 17px; }
+.site-header .brand__name { font-size: 14px; }
+.site-header .brand__sub { font-size: 15px; }
+.site-header .brand { gap: 10px; }
+.site-header .btn--small { padding: 9px 16px; }
 
 /* ---------- Ticker strip ---------- */
 .strip {
@@ -470,7 +495,7 @@ ul { padding: 0; list-style: none; }
   border-bottom: 1px solid var(--line);
   background:
     linear-gradient(180deg, rgba(10, 6, 8, .55), rgba(10, 6, 8, .95)),
-    url('../images/hero.jpg') center 30% / cover no-repeat;
+    url('../images/hero-bg.jpg') center 30% / cover no-repeat;
 }
 .page-hero .display { margin-bottom: 14px; }
 .page-hero .lead { color: var(--muted); max-width: 36em; margin: 0 auto; }
@@ -602,6 +627,8 @@ html.age-pending body > :not(.age-gate) { filter: blur(18px); pointer-events: no
 }
 
 @media (max-width: 960px) {
+  .hero__logo { width: min(74vw, calc((100svh - var(--header-h) - var(--dock-h) - 40px) * 1.5)); }
+  .dock__info li { padding: 0 18px; }
   .nav-toggle { display: block; }
   .site-nav {
     position: fixed; inset: var(--header-h) 0 0 0;
@@ -621,9 +648,7 @@ html.age-pending body > :not(.age-gate) { filter: blur(18px); pointer-events: no
   body.nav-open { overflow: hidden; }
   .site-header { background: rgba(10, 6, 8, .92); }
 
-  .hero { min-height: 0; padding-top: calc(var(--header-h) + 30px); }
-  .hero__grid, .split, .split--reverse, .visit, .rate-menus { grid-template-columns: 1fr; gap: 48px; }
-  .hero__media { order: -1; }
+  .split, .split--reverse, .visit, .rate-menus { grid-template-columns: 1fr; gap: 48px; }
   .split--reverse .split__media { order: 0; }
   .split__media img { aspect-ratio: 4 / 3; }
   .cards { grid-template-columns: 1fr; }
@@ -631,6 +656,17 @@ html.age-pending body > :not(.age-gate) { filter: blur(18px); pointer-events: no
 }
 
 @media (max-width: 640px) {
+  /* Phone: scale the artwork up and trim only the empty marble either side, so the whole logo stays whole */
+  .hero { --dock-h: 0px; }
+  .hero__stage { min-height: 0; padding: calc(var(--header-h) + 4px) 0 12px; background-position: 78% center; }
+  /* the logo file has transparent side margins, so it can run wider than the screen without clipping any artwork */
+  .hero__logo { width: 120vw; max-width: none; min-width: 0; }
+  .hero__dock-inner { padding-top: 22px; padding-bottom: 28px; }
+  .dock__info { flex-direction: column; align-items: center; gap: 10px; text-align: center; }
+  .dock__info li { padding: 0; }
+  .dock__info li + li { border-left: 0; }
+  .hero__dock .btn-row { width: 100%; flex-direction: column; }
+  .hero__dock .btn { width: 100%; }
   .container { padding: 0 16px; }
   .section { padding: 72px 0; }
   .split__cols, .form { grid-template-columns: 1fr; }
