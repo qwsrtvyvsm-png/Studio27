@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="en-AU">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Work With Us | Studio 27</title>
+  <meta name="description" content="Join the Studio 27 team. Flexible shifts in a safe, supportive environment.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;700&family=Cormorant+Garamond:ital,wght@0,500;1,500&family=Great+Vibes&family=Montserrat:wght@400;500;600;700&display=swap">
+  <link rel="stylesheet" href="css/style.css">
+  <script src="js/data.js"></script>
+  <script src="js/site.js"></script>
+</head>
+<body data-page="work">
+  <main id="main">
+    <section class="page-hero">
+      <div class="container">
+        <p class="eyebrow">Now hiring</p>
+        <h1 class="display">Work with <em>us</em></h1>
+        <p class="lead">Flexible shifts, great earnings and a team that looks after you.</p>
+      </div>
+    </section>
+
+    <section class="section">
+      <div class="container split">
+        <div>
+          <p class="script">Why Studio 27?</p>
+          <p class="lead">We&rsquo;re building a team that feels safe, respected and well supported.</p>
+          <ul class="check-list">
+            <li><strong>You choose your shifts</strong> &mdash; work the days and hours that suit you.</li>
+            <li><strong>You choose your services</strong> &mdash; you are always in control of what you offer.</li>
+            <li><strong>Safe environment</strong> &mdash; [security, CCTV in public areas, panic buttons, management on site].</li>
+            <li><strong>Privacy protected</strong> &mdash; your personal details are never shared.</li>
+            <li><strong>[Payment terms, e.g. paid at the end of each shift]</strong></li>
+            <li><strong>Luxury, clean suites</strong> with fresh linen and supplies provided.</li>
+          </ul>
+        </div>
+        <div>
+          <p class="eyebrow">Requirements</p>
+          <h2 class="h2">Who can <em>apply</em></h2>
+          <ul class="check-list">
+            <li>You must be <strong>18 years or older</strong> and able to show valid photo ID.</li>
+            <li>You must have the <strong>right to work in Australia</strong>.</li>
+            <li>You are applying <strong>of your own free will</strong>.</li>
+            <li>No experience necessary &mdash; we&rsquo;ll help you get started.</li>
+          </ul>
+          <div class="notice">
+            Prefer to talk first? Text <a data-site="phone" data-link="tel"></a> or email
+            <a data-site="recruitEmail" data-link="mailto"></a> for a confidential chat.
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section section--ink">
+      <div class="container" style="max-width:860px">
+        <div class="form-panel">
+          <p class="eyebrow">Confidential</p>
+          <h2 class="h3">Application form</h2>
+          <p class="muted" style="margin-bottom:26px;font-size:13px">
+            Please don&rsquo;t send photos or ID through this form &mdash; we&rsquo;ll arrange that privately when we meet.
+          </p>
+
+          <!-- Front-end only: connect to a form service (e.g. Formspree) or backend to receive applications. -->
+          <form class="form" data-redirect="thank-you.html?type=application">
+            <div class="field">
+              <label for="w-name">Your name <span class="req">*</span></label>
+              <input id="w-name" name="name" type="text" autocomplete="name" required>
+            </div>
+            <div class="field">
+              <label for="w-work-name">Preferred working name</label>
+              <input id="w-work-name" name="working_name" type="text">
+            </div>
+            <div class="field">
+              <label for="w-phone">Mobile <span class="req">*</span></label>
+              <input id="w-phone" name="phone" type="tel" autocomplete="tel" required>
+            </div>
+            <div class="field">
+              <label for="w-email">Email</label>
+              <input id="w-email" name="email" type="email" autocomplete="email">
+            </div>
+            <div class="field full">
+              <fieldset>
+                <legend>Days you&rsquo;re available</legend>
+                <div class="options">
+                  <label class="check"><input type="checkbox" name="days" value="Mon"> Mon</label>
+                  <label class="check"><input type="checkbox" name="days" value="Tue"> Tue</label>
+                  <label class="check"><input type="checkbox" name="days" value="Wed"> Wed</label>
+                  <label class="check"><input type="checkbox" name="days" value="Thu"> Thu</label>
+                  <label class="check"><input type="checkbox" name="days" value="Fri"> Fri</label>
+                  <label class="check"><input type="checkbox" name="days" value="Sat"> Sat</label>
+                  <label class="check"><input type="checkbox" name="days" value="Sun"> Sun</label>
+                </div>
+              </fieldset>
+            </div>
+            <div class="field full">
+              <fieldset>
+                <legend>Experience</legend>
+                <div class="options">
+                  <label class="check"><input type="radio" name="experience" value="none" checked> None</label>
+                  <label class="check"><input type="radio" name="experience" value="some"> Some</label>
+                  <label class="check"><input type="radio" name="experience" value="experienced"> Experienced</label>
+                </div>
+              </fieldset>
+            </div>
+            <div class="field full">
+              <label for="w-msg">Tell us a little about yourself</label>
+              <textarea id="w-msg" name="message"></textarea>
+            </div>
+            <div class="field full">
+              <label class="check"><input type="checkbox" name="age" required> I confirm I am 18 years or older and can provide valid photo ID.</label>
+            </div>
+            <div class="field full">
+              <label class="check"><input type="checkbox" name="consent" required> I am applying of my own free will and agree to the <a href="privacy.html">Privacy Policy</a>.</label>
+            </div>
+            <div class="field full">
+              <button type="submit" class="btn btn--pink">Send Application</button>
+              <p class="form-status" role="status"></p>
+            </div>
+          </form>
+        </div>
+      </div>
+    </section>
+  </main>
+</body>
+</html>

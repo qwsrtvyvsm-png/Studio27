@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="en-AU">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Contact &amp; Bookings | Studio 27</title>
+  <meta name="description" content="Contact Studio 27 or request a booking.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;700&family=Cormorant+Garamond:ital,wght@0,500;1,500&family=Great+Vibes&family=Montserrat:wght@400;500;600;700&display=swap">
+  <link rel="stylesheet" href="css/style.css">
+  <script src="js/data.js"></script>
+  <script src="js/site.js"></script>
+</head>
+<body data-page="contact">
+  <main id="main">
+    <section class="page-hero">
+      <div class="container">
+        <p class="eyebrow">Location &amp; Contact</p>
+        <h1 class="display">Get in <em>touch</em></h1>
+        <p class="lead">Call, text or send a booking request below.</p>
+      </div>
+    </section>
+
+    <section class="section">
+      <div class="container visit">
+        <div>
+          <p class="eyebrow">Find Us</p>
+          <h2 class="h2">Studio <em>27</em></h2>
+          <dl class="info-list">
+            <div><dt>Address</dt><dd><span data-site="address"></span><br><span data-site="suburb"></span></dd></div>
+            <div><dt>Phone / SMS</dt><dd><a data-site="phone" data-link="tel"></a></dd></div>
+            <div><dt>Email</dt><dd><a data-site="email" data-link="mailto"></a></dd></div>
+            <div><dt>Parking</dt><dd data-site="parking"></dd></div>
+          </dl>
+          <div data-hours></div>
+        </div>
+
+        <div class="form-panel">
+          <p class="eyebrow">Booking request</p>
+          <h2 class="h3">Request a booking</h2>
+          <p class="muted" style="margin-bottom:26px;font-size:13px">Your booking isn&rsquo;t confirmed until we contact you. Your details are kept private.</p>
+
+          <!-- Front-end only: connect to a form service (e.g. Formspree) or backend to receive requests. -->
+          <form class="form" data-redirect="thank-you.html">
+            <div class="field">
+              <label for="c-name">Name <span class="req">*</span></label>
+              <input id="c-name" name="name" type="text" autocomplete="name" required>
+            </div>
+            <div class="field">
+              <label for="c-phone">Mobile <span class="req">*</span></label>
+              <input id="c-phone" name="phone" type="tel" autocomplete="tel" required>
+            </div>
+            <div class="field full">
+              <label for="c-email">Email</label>
+              <input id="c-email" name="email" type="email" autocomplete="email">
+            </div>
+            <div class="field">
+              <label for="c-model">Preferred model</label>
+              <select id="c-model" name="model" data-model-select>
+                <option value="">No preference</option>
+              </select>
+            </div>
+            <div class="field">
+              <label for="c-length">Session length</label>
+              <select id="c-length" name="length">
+                <option>30 minutes</option>
+                <option>45 minutes</option>
+                <option selected>60 minutes</option>
+                <option>90 minutes</option>
+                <option>2 hours</option>
+              </select>
+            </div>
+            <div class="field">
+              <label for="c-date">Preferred date <span class="req">*</span></label>
+              <input id="c-date" name="date" type="date" required>
+            </div>
+            <div class="field">
+              <label for="c-time">Preferred time <span class="req">*</span></label>
+              <input id="c-time" name="time" type="time" required>
+            </div>
+            <div class="field full">
+              <label for="c-msg">Message</label>
+              <textarea id="c-msg" name="message"></textarea>
+            </div>
+            <div class="field full">
+              <label class="check"><input type="checkbox" name="age" required> I confirm I am 18 years or older and agree to the <a href="house-rules.html">House Rules</a>.</label>
+            </div>
+            <div class="field full">
+              <button type="submit" class="btn btn--gold">Send Request</button>
+              <p class="form-status" role="status"></p>
+            </div>
+          </form>
+        </div>
+      </div>
+    </section>
+
+    <section class="section section--tight section--ink">
+      <div class="container">
+        <div class="map">
+          <!-- Replace with a Google Maps embed iframe -->
+          <p>Map coming soon</p>
+        </div>
+      </div>
+    </section>
+  </main>
+</body>
+</html>
