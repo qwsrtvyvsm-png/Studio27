@@ -345,6 +345,11 @@ ul { padding: 0; list-style: none; }
   content: ''; position: absolute; inset: 18px -18px -18px 18px; z-index: -1;
   background: var(--pink-grad); opacity: .7;
 }
+/* ---------- Photo grid (home "Welcome" section) ---------- */
+.photo-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; max-width: 520px; justify-self: end; width: 100%; }
+.photo-grid img { width: 100%; aspect-ratio: 3 / 4; object-fit: cover; border: 1px solid var(--line); transition: border-color .3s; }
+.photo-grid img:hover { border-color: var(--gold); }
+.photo-grid img:nth-child(even) { transform: translateY(24px); }
 .signature { font-family: var(--font-script); font-size: 2.4rem; color: var(--pink); margin-top: 26px; line-height: 1; }
 
 /* ---------- Feature cards ---------- */
@@ -651,6 +656,7 @@ html.age-pending body > :not(.age-gate) { filter: blur(18px); pointer-events: no
   .split, .split--reverse, .visit, .rate-menus { grid-template-columns: 1fr; gap: 48px; }
   .split--reverse .split__media { order: 0; }
   .split__media img { aspect-ratio: 4 / 3; }
+  .photo-grid { justify-self: center; margin-bottom: 24px; }
   .cards { grid-template-columns: 1fr; }
   .rules { grid-template-columns: 1fr; }
 }

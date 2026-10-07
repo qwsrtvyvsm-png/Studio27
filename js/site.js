@@ -53,7 +53,7 @@
           '</button>' +
           '<nav id="site-nav" class="site-nav" aria-label="Main">' +
             '<ul>' + links + '</ul>' +
-            '<a class="btn btn--small btn--pink" href="work-with-us.html"' + (page === 'work' ? ' aria-current="page"' : '') + '>Work With Us</a>' +
+            '<a class="btn btn--small btn--pink" href="work-with-us.html"' + (page === 'work' ? ' aria-current="page"' : '') + '>Apply Now</a>' +
           '</nav>' +
         '</div>' +
       '</header>';
@@ -86,7 +86,7 @@
               '<li><a href="house-rules.html">House Rules</a></li>' +
               '<li><a href="news.html">News &amp; Updates</a></li>' +
               '<li><a href="faq.html">FAQ</a></li>' +
-              '<li><a href="work-with-us.html">Work With Us</a></li>' +
+              '<li><a href="work-with-us.html">Apply Now</a></li>' +
             '</ul>' +
           '</div>' +
           '<div>' +
