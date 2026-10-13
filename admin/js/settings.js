@@ -31,10 +31,46 @@
         '<button type="submit" class="btn btn--pink">Save changes</button>' +
         '<p class="form-status" role="status"></p>' +
         '</div>' +
-        '</form>';
+        '</form>' +
+        panel('Account', accountFields());
 
       wireRateRows();
       document.getElementById('settings-form').addEventListener('submit', onSubmit);
+      document.getElementById('password-form').addEventListener('submit', onPasswordSubmit);
+    }
+
+    function accountFields() {
+      return (
+        '<form id="password-form" class="form">' +
+        '<div class="field"><label for="p-current">Current password</label><input id="p-current" name="currentPassword" type="password" autocomplete="current-password" required></div>' +
+        '<div class="field"><label for="p-new">New password</label><input id="p-new" name="newPassword" type="password" autocomplete="new-password" minlength="8" required></div>' +
+        '<div class="field full">' +
+        '<button type="submit" class="btn btn--ghost">Change password</button>' +
+        '<p class="form-status" role="status"></p>' +
+        '</div>' +
+        '</form>'
+      );
+    }
+
+    function onPasswordSubmit(e) {
+      e.preventDefault();
+      var form = e.target;
+      var status = form.querySelector('.form-status');
+      status.textContent = '';
+      status.className = 'form-status';
+      Admin.api('/auth/password', {
+        method: 'PUT',
+        body: { currentPassword: form.currentPassword.value, newPassword: form.newPassword.value }
+      })
+        .then(function () {
+          status.className = 'form-status is-ok';
+          status.textContent = 'Password changed.';
+          form.reset();
+        })
+        .catch(function (err) {
+          status.className = 'form-status is-error';
+          status.textContent = err.message;
+        });
     }
 
     function panel(title, body) {
