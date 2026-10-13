@@ -160,6 +160,28 @@
     });
   }
 
+  function renderRates(el) {
+    var rates = SITE.rates || { sessions: [], services: [], servicesNote: '' };
+    var sessionsHTML = (rates.sessions || [])
+      .map(function (s) {
+        return '<li><span class="name">' + esc(s.name) + '</span><span class="dots"></span><span class="price">$' + esc(s.price) + '</span></li>';
+      })
+      .join('');
+    var servicesHTML = (rates.services || [])
+      .map(function (s) {
+        return '<li><span class="name">' + esc(s.name) + (s.description ? '<small>' + esc(s.description) + '</small>' : '') +
+          '</span><span class="dots"></span><span class="price">$' + esc(s.price) + '</span></li>';
+      })
+      .join('');
+    el.innerHTML = '' +
+      '<div class="rate-menu"><h2 class="h3">Sessions</h2>' +
+      '<p>All sessions include a private room and shower facilities.</p>' +
+      '<ul class="rate-list">' + (sessionsHTML || '<li>Rates coming soon &mdash; please call to ask.</li>') + '</ul></div>' +
+      '<div class="rate-menu"><h2 class="h3">Services</h2>' +
+      '<p>' + esc(rates.servicesNote || '') + '</p>' +
+      '<ul class="rate-list">' + (servicesHTML || '<li>Services coming soon &mdash; please call to ask.</li>') + '</ul></div>';
+  }
+
   function renderHours(el) {
     el.innerHTML = '<table class="hours-table"><caption class="sr-only">Opening hours</caption><tbody>' +
       DAYS.map(function (d) {
@@ -227,10 +249,10 @@
     });
   }
 
-  /* ---------- Forms (front-end only) ----------
-     Each form redirects to its data-redirect page once valid.
-     To actually receive submissions, point the form at a form
-     service (e.g. Formspree) or your own backend.               */
+  /* ---------- Forms ----------
+     Forms with a data-endpoint post to the API (see server/routes/).
+     Forms without one just redirect once valid (used nowhere currently,
+     kept as a harmless fallback).                                      */
   function wireForms() {
     document.querySelectorAll('form[data-redirect]').forEach(function (form) {
       form.addEventListener('submit', function (e) {
@@ -241,8 +263,74 @@
           if (status) status.textContent = 'Please complete the required fields.';
           return;
         }
-        location.href = form.dataset.redirect;
+
+        var endpoint = form.dataset.endpoint;
+        if (!endpoint) {
+          location.href = form.dataset.redirect;
+          return;
+        }
+
+        var submitBtn = form.querySelector('button[type="submit"]');
+        if (submitBtn) submitBtn.disabled = true;
+        if (status) status.textContent = 'Sending…';
+
+        fetch(endpoint, { method: 'POST', body: new FormData(form) })
+          .then(function (res) {
+            return res
+              .json()
+              .catch(function () { return null; })
+              .then(function (data) {
+                if (!res.ok) throw new Error((data && data.error) || 'Something went wrong. Please try again.');
+                return data;
+              });
+          })
+          .then(function () {
+            location.href = form.dataset.redirect;
+          })
+          .catch(function (err) {
+            if (submitBtn) submitBtn.disabled = false;
+            if (status) status.textContent = err.message;
+          });
       });
+    });
+  }
+
+  /* ---------- Render everything that depends on SITE/MODELS ---------- */
+  function renderContent() {
+    fillSiteFields();
+    document.querySelectorAll('[data-hours]').forEach(renderHours);
+    document.querySelectorAll('[data-models]').forEach(renderModels);
+    document.querySelectorAll('[data-roster]').forEach(renderRoster);
+    document.querySelectorAll('[data-today]').forEach(renderToday);
+    document.querySelectorAll('[data-rates]').forEach(renderRates);
+    document.querySelectorAll('select[data-model-select]').forEach(fillModelSelect);
+  }
+
+  /* Pulls live content from the API and re-renders over the data.js
+     fallback once it arrives, so pages never sit blank on first paint
+     and still work if the API is briefly unreachable.                */
+  function loadLiveContent() {
+    var fetchJSON = function (url) {
+      return fetch(url)
+        .then(function (res) { return res.ok ? res.json() : null; })
+        .catch(function () { return null; });
+    };
+
+    Promise.all([fetchJSON('/api/public/site'), fetchJSON('/api/public/models')]).then(function (results) {
+      var liveSite = results[0];
+      var liveModels = results[1];
+      var changed = false;
+
+      if (liveSite && Object.keys(liveSite).length) {
+        Object.assign(SITE, liveSite);
+        changed = true;
+      }
+      if (Array.isArray(liveModels) && liveModels.length) {
+        MODELS.length = 0;
+        liveModels.forEach(function (m) { MODELS.push(m); });
+        changed = true;
+      }
+      if (changed) renderContent();
     });
   }
 
@@ -269,12 +357,8 @@
     window.addEventListener('scroll', onScroll, { passive: true });
     onScroll();
 
-    fillSiteFields();
-    document.querySelectorAll('[data-hours]').forEach(renderHours);
-    document.querySelectorAll('[data-models]').forEach(renderModels);
-    document.querySelectorAll('[data-roster]').forEach(renderRoster);
-    document.querySelectorAll('[data-today]').forEach(renderToday);
-    document.querySelectorAll('select[data-model-select]').forEach(fillModelSelect);
+    renderContent();
+    loadLiveContent();
     wireForms();
 
     // Legal pages are readable without passing the gate

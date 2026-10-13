@@ -68,8 +68,7 @@
             Please don&rsquo;t send ID through this form &mdash; we&rsquo;ll arrange that privately when we meet. Recent photos help us process your application faster.
           </p>
 
-          <!-- Front-end only: connect to a form service (e.g. Formspree) or backend to receive applications. File uploads need a form service plan that supports attachments. -->
-          <form class="form" data-redirect="thank-you.html?type=application" enctype="multipart/form-data">
+          <form class="form" data-redirect="thank-you.html?type=application" data-endpoint="/api/applications" enctype="multipart/form-data">
             <div class="field">
               <label for="w-name">Your name <span class="req">*</span></label>
               <input id="w-name" name="name" type="text" autocomplete="name" required>

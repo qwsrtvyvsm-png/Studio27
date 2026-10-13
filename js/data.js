@@ -34,6 +34,25 @@ const SITE = {
     Fri: '[10:00am – 4:00am]',
     Sat: '[10:00am – 4:00am]',
     Sun: '[12:00pm – 12:00am]'
+  },
+
+  // Rates & services (editable from the admin dashboard — this is the
+  // fallback shown before /api/public/site loads, or if it's unreachable)
+  rates: {
+    sessions: [
+      { name: '30 minutes', price: '[000]' },
+      { name: '45 minutes', price: '[000]' },
+      { name: '60 minutes', price: '[000]' },
+      { name: '90 minutes', price: '[000]' },
+      { name: '2 hours', price: '[000]' }
+    ],
+    servicesNote: '[Short note about how services are agreed.]',
+    services: [
+      { name: '[Service name]', description: '[Short description]', price: '[000]' },
+      { name: '[Service name]', description: '[Short description]', price: '[000]' },
+      { name: '[Service name]', description: '[Short description]', price: '[000]' },
+      { name: '[Service name]', description: '[Short description]', price: '[000]' }
+    ]
   }
 };
 
