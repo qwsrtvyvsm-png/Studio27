@@ -109,6 +109,15 @@
           Admin.api('/enquiries/' + sel.dataset.statusSelect, { method: 'PATCH', body: { status: sel.value } }).then(load);
         });
       });
+      wrap.querySelectorAll('[data-delete]').forEach(function (btn) {
+        btn.addEventListener('click', function () {
+          if (!confirm('Delete this entry? This cannot be undone.')) return;
+          Admin.api('/enquiries/' + btn.dataset.delete, { method: 'DELETE' }).then(function () {
+            state.openId = null;
+            load();
+          });
+        });
+      });
     }
 
     function detailHTML(item) {
@@ -155,6 +164,7 @@
         '</select>' +
         '</div>' +
         photos +
+        '<button type="button" class="btn btn--small btn--ghost" style="margin-top:18px" data-delete="' + item.id + '">Delete</button>' +
         '</div>'
       );
     }

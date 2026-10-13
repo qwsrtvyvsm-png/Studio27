@@ -83,4 +83,9 @@ router.patch('/:id', requireAuth, async (req, res) => {
   res.json({ ok: true });
 });
 
+router.delete('/:id', requireAuth, async (req, res) => {
+  await pool.query('DELETE FROM enquiries WHERE id = $1', [req.params.id]);
+  res.json({ ok: true });
+});
+
 module.exports = router;
