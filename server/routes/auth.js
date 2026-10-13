@@ -92,4 +92,29 @@ router.put('/password', requireAuth, authLimiter, async (req, res) => {
   res.json({ ok: true });
 });
 
+router.put('/email', requireAuth, authLimiter, async (req, res) => {
+  const currentPassword = req.body.currentPassword || '';
+  const newEmail = (req.body.newEmail || '').trim().toLowerCase();
+  if (!newEmail || !newEmail.includes('@')) {
+    return res.status(400).json({ error: 'A valid email is required.' });
+  }
+
+  const { rows } = await pool.query('SELECT password_hash FROM admin_users WHERE id = $1', [req.session.userId]);
+  const user = rows[0];
+  const ok = user && (await bcrypt.compare(currentPassword, user.password_hash));
+  if (!ok) {
+    return res.status(401).json({ error: 'Current password is incorrect.' });
+  }
+
+  try {
+    await pool.query('UPDATE admin_users SET email = $1 WHERE id = $2', [newEmail, req.session.userId]);
+  } catch (err) {
+    if (err.code === '23505') {
+      return res.status(409).json({ error: 'That email is already in use.' });
+    }
+    throw err;
+  }
+  res.json({ ok: true, email: newEmail });
+});
+
 module.exports = router;

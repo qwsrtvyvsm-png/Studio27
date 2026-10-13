@@ -4,17 +4,19 @@
   var esc = Admin.esc;
   var DAYS = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
   var data = {};
+  var accountEmail = '';
 
   Admin.requireSession(function () {
     Admin.mountShell('settings', 'Site Settings', 'Edit hours, rates and the contact/compliance details shown on the public site.');
     var content = document.getElementById('admin-content');
     content.innerHTML = '<p class="muted">Loading&hellip;</p>';
 
-    Admin.api('/settings')
-      .then(function (res) {
-        data = res || {};
+    Promise.all([Admin.api('/settings'), Admin.api('/auth/me')])
+      .then(function (results) {
+        data = results[0] || {};
         data.hours = data.hours || {};
         data.rates = data.rates || { sessions: [], services: [], servicesNote: '' };
+        accountEmail = (results[1] && results[1].email) || '';
         render();
       })
       .catch(function (err) {
@@ -36,11 +38,21 @@
 
       wireRateRows();
       document.getElementById('settings-form').addEventListener('submit', onSubmit);
+      document.getElementById('email-form').addEventListener('submit', onEmailSubmit);
       document.getElementById('password-form').addEventListener('submit', onPasswordSubmit);
     }
 
     function accountFields() {
       return (
+        '<p class="hint" style="margin-bottom:18px">Signed in as <strong>' + esc(accountEmail) + '</strong></p>' +
+        '<form id="email-form" class="form" style="margin-bottom:28px">' +
+        '<div class="field"><label for="e-new">New email</label><input id="e-new" name="newEmail" type="email" autocomplete="username" required></div>' +
+        '<div class="field"><label for="e-current">Current password</label><input id="e-current" name="currentPassword" type="password" autocomplete="current-password" required></div>' +
+        '<div class="field full">' +
+        '<button type="submit" class="btn btn--ghost">Change email</button>' +
+        '<p class="form-status" role="status"></p>' +
+        '</div>' +
+        '</form>' +
         '<form id="password-form" class="form">' +
         '<div class="field"><label for="p-current">Current password</label><input id="p-current" name="currentPassword" type="password" autocomplete="current-password" required></div>' +
         '<div class="field"><label for="p-new">New password</label><input id="p-new" name="newPassword" type="password" autocomplete="new-password" minlength="8" required></div>' +
@@ -50,6 +62,30 @@
         '</div>' +
         '</form>'
       );
+    }
+
+    function onEmailSubmit(e) {
+      e.preventDefault();
+      var form = e.target;
+      var status = form.querySelector('.form-status');
+      status.textContent = '';
+      status.className = 'form-status';
+      Admin.api('/auth/email', {
+        method: 'PUT',
+        body: { currentPassword: form.currentPassword.value, newEmail: form.newEmail.value }
+      })
+        .then(function (res) {
+          accountEmail = res.email;
+          status.className = 'form-status is-ok';
+          status.textContent = 'Email changed.';
+          form.reset();
+          var label = document.querySelector('#admin-content .hint strong');
+          if (label) label.textContent = accountEmail;
+        })
+        .catch(function (err) {
+          status.className = 'form-status is-error';
+          status.textContent = err.message;
+        });
     }
 
     function onPasswordSubmit(e) {
