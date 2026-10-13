@@ -59,9 +59,8 @@
   }
 
   /* ---------- Footer ---------- */
-  function footerHTML() {
+  function footerInnerHTML() {
     return '' +
-      '<footer class="site-footer">' +
         '<div class="container footer-grid">' +
           '<div class="footer-brand">' +
             '<a class="brand" href="index.html"><span class="brand__mark">27</span>' +
@@ -110,8 +109,7 @@
           '</dl>' +
           '<p class="copyright">&copy; ' + new Date().getFullYear() + ' ' + esc(SITE.legalName) + ' trading as Studio 27. All rights reserved. ' +
           'The Studio 27 name, logo, images and content are protected by copyright and may not be reproduced without written permission.</p>' +
-        '</div>' +
-      '</footer>';
+        '</div>';
   }
 
   /* ---------- Age gate ---------- */
@@ -299,7 +297,20 @@
   }
 
   /* ---------- Render everything that depends on SITE/MODELS ---------- */
+  function renderFooter() {
+    // Reuse the same node across re-renders (rather than replacing it) so
+    // that if the age gate already applied `inert` to it, that stays intact.
+    var el = document.querySelector('.site-footer');
+    if (!el) {
+      el = document.createElement('footer');
+      el.className = 'site-footer';
+      document.body.appendChild(el);
+    }
+    el.innerHTML = footerInnerHTML();
+  }
+
   function renderContent() {
+    renderFooter();
     fillSiteFields();
     document.querySelectorAll('[data-hours]').forEach(renderHours);
     document.querySelectorAll('[data-models]').forEach(renderModels);
@@ -343,7 +354,6 @@
     var page = body.dataset.page || '';
 
     body.insertAdjacentHTML('afterbegin', headerHTML(page));
-    body.insertAdjacentHTML('beforeend', footerHTML());
 
     // Mobile nav
     var toggle = document.querySelector('.nav-toggle');
