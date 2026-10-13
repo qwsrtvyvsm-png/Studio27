@@ -241,6 +241,9 @@
 
   function fillModelSelect(sel) {
     var wanted = new URLSearchParams(location.search).get('model');
+    // Re-run safely when live data replaces the data.js fallback: keep
+    // only the first option (the placeholder) and rebuild the rest.
+    while (sel.options.length > 1) sel.remove(1);
     MODELS.forEach(function (m) {
       var o = document.createElement('option');
       o.value = o.textContent = m.name;
