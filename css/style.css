@@ -477,7 +477,9 @@ ul { padding: 0; list-style: none; }
 .rate-list .name { font-family: var(--font-serif); font-size: 1.25rem; }
 .rate-list .name small { display: block; font-family: var(--font-sans); font-size: 11.5px; color: var(--muted); }
 .rate-list .dots { flex: 1; border-bottom: 1px dotted rgba(212, 165, 74, .45); transform: translateY(-5px); }
-.rate-list .price { font-family: var(--font-display); color: var(--gold-light); font-size: 1.1rem; }
+.rate-list .price { font-family: var(--font-display); color: var(--gold-light); font-size: 1.1rem; text-align: center; }
+.rate-list .price small { display: block; font-family: var(--font-sans); font-size: 10px; letter-spacing: .06em; text-transform: uppercase; color: var(--muted); }
+.rate-list .price-pair { display: flex; gap: 20px; flex: none; }
 
 .notice {
   padding: 22px 26px; margin-top: 36px;

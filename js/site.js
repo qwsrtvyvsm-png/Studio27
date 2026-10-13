@@ -162,7 +162,13 @@
     var rates = SITE.rates || { sessions: [], services: [], servicesNote: '' };
     var sessionsHTML = (rates.sessions || [])
       .map(function (s) {
-        return '<li><span class="name">' + esc(s.name) + '</span><span class="dots"></span><span class="price">$' + esc(s.price) + '</span></li>';
+        var incall = s.incallPrice != null ? s.incallPrice : s.price;
+        var outcall = s.outcallPrice != null ? s.outcallPrice : s.price;
+        return '<li><span class="name">' + esc(s.name) + '</span><span class="dots"></span>' +
+          '<span class="price-pair">' +
+          '<span class="price"><small>Incall</small>$' + esc(incall) + '</span>' +
+          '<span class="price"><small>Outcall</small>$' + esc(outcall) + '</span>' +
+          '</span></li>';
       })
       .join('');
     var servicesHTML = (rates.services || [])

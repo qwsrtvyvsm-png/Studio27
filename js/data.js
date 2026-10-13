@@ -40,11 +40,11 @@ const SITE = {
   // fallback shown before /api/public/site loads, or if it's unreachable)
   rates: {
     sessions: [
-      { name: '30 minutes', price: '[000]' },
-      { name: '45 minutes', price: '[000]' },
-      { name: '60 minutes', price: '[000]' },
-      { name: '90 minutes', price: '[000]' },
-      { name: '2 hours', price: '[000]' }
+      { name: '30 minutes', incallPrice: '[000]', outcallPrice: '[000]' },
+      { name: '45 minutes', incallPrice: '[000]', outcallPrice: '[000]' },
+      { name: '60 minutes', incallPrice: '[000]', outcallPrice: '[000]' },
+      { name: '90 minutes', incallPrice: '[000]', outcallPrice: '[000]' },
+      { name: '2 hours', incallPrice: '[000]', outcallPrice: '[000]' }
     ],
     servicesNote: '[Short note about how services are agreed.]',
     services: [

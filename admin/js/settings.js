@@ -156,6 +156,7 @@
       return (
         '<div>' +
         '<h3 class="h3" style="font-size:1rem;margin-bottom:10px">Sessions</h3>' +
+        '<div class="rate-editor-row rate-editor-row--session rate-editor-header"><span>Duration</span><span>Incall</span><span>Outcall</span><span></span></div>' +
         '<div id="sessions-rows">' + (data.rates.sessions || []).map(sessionRow).join('') + '</div>' +
         '<button type="button" class="btn btn--small btn--ghost" id="add-session">+ Add session</button>' +
         '<h3 class="h3" style="font-size:1rem;margin:28px 0 10px">Services</h3>' +
@@ -169,11 +170,13 @@
     }
 
     function sessionRow(s, i) {
+      var incall = s.incallPrice != null ? s.incallPrice : (s.price || '');
+      var outcall = s.outcallPrice != null ? s.outcallPrice : (s.price || '');
       return (
-        '<div class="rate-editor-row" data-session-row="' + i + '">' +
+        '<div class="rate-editor-row rate-editor-row--session" data-session-row="' + i + '">' +
         '<input placeholder="e.g. 30 minutes" value="' + esc(s.name || '') + '" data-session-name>' +
-        '<span></span>' +
-        '<input placeholder="Price" value="' + esc(s.price || '') + '" data-session-price>' +
+        '<input placeholder="Incall price" value="' + esc(incall) + '" data-session-incall>' +
+        '<input placeholder="Outcall price" value="' + esc(outcall) + '" data-session-outcall>' +
         '<button type="button" data-remove-session="' + i + '">&times;</button>' +
         '</div>'
       );
@@ -193,7 +196,7 @@
     function wireRateRows() {
       document.getElementById('add-session').addEventListener('click', function () {
         data.rates = collectRates();
-        data.rates.sessions.push({ name: '', price: '' });
+        data.rates.sessions.push({ name: '', incallPrice: '', outcallPrice: '' });
         rerenderRatesOnly();
       });
       document.getElementById('add-service').addEventListener('click', function () {
@@ -229,7 +232,8 @@
       var sessions = Array.from(document.querySelectorAll('#sessions-rows [data-session-row]')).map(function (row) {
         return {
           name: row.querySelector('[data-session-name]').value.trim(),
-          price: row.querySelector('[data-session-price]').value.trim()
+          incallPrice: row.querySelector('[data-session-incall]').value.trim(),
+          outcallPrice: row.querySelector('[data-session-outcall]').value.trim()
         };
       });
       var services = Array.from(document.querySelectorAll('#services-rows [data-service-row]')).map(function (row) {
