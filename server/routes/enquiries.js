@@ -1,10 +1,16 @@
 const express = require('express');
+const multer = require('multer');
 const { pool } = require('../db');
 const requireAuth = require('../middleware/requireAuth');
 
 const router = express.Router();
 
-router.post('/', async (req, res) => {
+// The booking form has no file inputs but is still posted as
+// multipart/form-data (see js/site.js wireForms), so it needs multer's
+// field parsing even though nothing here is ever uploaded.
+const parseFields = multer().none();
+
+router.post('/', parseFields, async (req, res) => {
   const b = req.body;
   if (!b.name || !b.phone || !b.date || !b.time) {
     return res.status(400).json({ error: 'Name, mobile, date and time are required.' });
