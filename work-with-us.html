@@ -18,7 +18,7 @@
       <div class="container">
         <p class="eyebrow">Now Hiring</p>
         <h1 class="display">Work with <em>us</em></h1>
-        <p class="lead">Flexible shifts, great earnings and a team that looks after you.</p>
+        <p class="lead">Earn up to 2k a week, flexible hours with a great team to work with.</p>
       </div>
     </section>
 
@@ -41,10 +41,16 @@
           <h2 class="h2">Who can <em>apply</em></h2>
           <ul class="check-list">
             <li>You must be <strong>18 years or older</strong> and able to show valid photo ID.</li>
-            <li>You must have the <strong>right to work in Australia</strong>.</li>
+            <li>We welcome all <strong>ethnicities, visa holders and citizens</strong>.</li>
             <li>You are applying <strong>of your own free will</strong>.</li>
             <li>No experience necessary &mdash; we&rsquo;ll help you get started.</li>
           </ul>
+          <div class="notice">
+            <strong>Please note:</strong> we don&rsquo;t hire everyone who applies. We&rsquo;re a small, selective team and only take on applicants who are the right fit for Studio 27.
+          </div>
+          <div class="notice">
+            <strong>Next steps:</strong> if your application looks like a good fit, you&rsquo;ll be invited in for an in-person screening, where we&rsquo;ll also walk you through how things work &mdash; rates, rules and everything else &mdash; before you start.
+          </div>
           <div class="notice">
             Prefer to talk first? Text <a data-site="phone" data-link="tel"></a> or email
             <a data-site="recruitEmail" data-link="mailto"></a> for a confidential chat.
@@ -59,11 +65,11 @@
           <p class="eyebrow">Confidential</p>
           <h2 class="h3">Application form</h2>
           <p class="muted" style="margin-bottom:26px;font-size:13px">
-            Please don&rsquo;t send photos or ID through this form &mdash; we&rsquo;ll arrange that privately when we meet.
+            Please don&rsquo;t send ID through this form &mdash; we&rsquo;ll arrange that privately when we meet. Recent photos help us process your application faster.
           </p>
 
-          <!-- Front-end only: connect to a form service (e.g. Formspree) or backend to receive applications. -->
-          <form class="form" data-redirect="thank-you.html?type=application">
+          <!-- Front-end only: connect to a form service (e.g. Formspree) or backend to receive applications. File uploads need a form service plan that supports attachments. -->
+          <form class="form" data-redirect="thank-you.html?type=application" enctype="multipart/form-data">
             <div class="field">
               <label for="w-name">Your name <span class="req">*</span></label>
               <input id="w-name" name="name" type="text" autocomplete="name" required>
@@ -105,8 +111,15 @@
               </fieldset>
             </div>
             <div class="field full">
-              <label for="w-msg">Tell us a little about yourself</label>
+              <label for="w-msg">Introduce yourself, don't hold back your personality!</label>
               <textarea id="w-msg" name="message"></textarea>
+            </div>
+            <div class="field full">
+              <label for="w-photos">Upload photos <span class="req">*</span></label>
+              <input id="w-photos" name="photos" type="file" accept="image/*" multiple required>
+              <p class="muted" style="font-size:12px;margin-top:6px">
+                Required &mdash; recent, clear photos of yourself. Kept confidential and only viewed by management as part of your application.
+              </p>
             </div>
             <div class="field full">
               <label class="check"><input type="checkbox" name="age" required> I confirm I am 18 years or older and can provide valid photo ID.</label>

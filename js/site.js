@@ -22,7 +22,6 @@
     { href: 'ladies.html', label: 'Ladies', id: 'models' },
     { href: 'roster.html', label: 'Roster & Hours', id: 'roster' },
     { href: 'rates.html', label: 'Rates', id: 'rates' },
-    { href: 'faq.html', label: 'FAQ', id: 'faq' },
     { href: 'contact.html', label: 'Contact', id: 'contact' }
   ];
 
@@ -182,6 +181,7 @@
         '</div>' +
         '<div class="model-card__body">' +
           '<h3>' + esc(m.name) + '</h3>' +
+          (m.age ? '<p class="model-card__age">Age ' + esc(m.age) + '</p>' : '') +
           '<p>' + esc(m.intro) + '</p>' +
           '<p class="model-card__days"><span>Available</span> ' + (m.days.length ? m.days.join(' &middot; ') : 'By request') + '</p>' +
           '<a class="link-arrow" href="contact.html?model=' + encodeURIComponent(m.name) + '">Enquire</a>' +

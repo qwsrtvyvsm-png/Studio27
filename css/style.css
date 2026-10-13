@@ -387,7 +387,8 @@ ul { padding: 0; list-style: none; }
 .model-card__placeholder span { font-family: var(--font-serif); font-style: italic; font-size: 4rem; color: var(--gold); opacity: .55; line-height: 1; }
 .model-card__placeholder small { font-size: 10px; letter-spacing: .24em; text-transform: uppercase; color: var(--muted); }
 .model-card__body { padding: 22px 22px 26px; }
-.model-card__body h3 { font-family: var(--font-display); font-weight: 500; font-size: 1.15rem; letter-spacing: .08em; color: var(--gold-light); margin-bottom: 6px; }
+.model-card__body h3 { font-family: var(--font-display); font-weight: 500; font-size: 1.15rem; letter-spacing: .08em; color: var(--gold-light); margin-bottom: 2px; }
+.model-card__age { font-size: 11px !important; letter-spacing: .14em; text-transform: uppercase; color: var(--muted) !important; margin-bottom: 8px !important; }
 .model-card__body p { color: var(--muted); font-size: 13px; margin-bottom: 12px; }
 .model-card__days { font-size: 12px !important; color: var(--text) !important; }
 .model-card__days span { display: block; font-size: 9.5px; letter-spacing: .22em; text-transform: uppercase; color: var(--pink); }
@@ -442,14 +443,24 @@ ul { padding: 0; list-style: none; }
 .map iframe { width: 100%; height: 100%; border: 0; min-height: 360px; filter: grayscale(1) invert(.9) contrast(.9); }
 
 /* ---------- Tables ---------- */
+.roster-legend { display: flex; align-items: center; gap: 8px; font-size: 12px; color: var(--muted); margin-bottom: 14px; }
+.roster-legend__swatch { display: inline-block; width: 12px; height: 12px; border-radius: 2px; border: 1px solid var(--line-soft); }
+.roster-legend__swatch.is-on { background: rgba(176, 24, 111, .35); border-color: rgba(176, 24, 111, .5); }
+.roster-legend__swatch.is-off { background: transparent; }
+
 .table-wrap { overflow-x: auto; border: 1px solid var(--line); -webkit-overflow-scrolling: touch; }
 .roster-table, .hours-table { width: 100%; border-collapse: collapse; font-size: 13px; }
-.roster-table th, .roster-table td { padding: 14px 16px; text-align: left; border-bottom: 1px solid var(--line-soft); white-space: nowrap; }
-.roster-table thead th { font-size: 10px; letter-spacing: .22em; text-transform: uppercase; color: var(--pink); background: var(--surface); }
-.roster-table tbody th { font-family: var(--font-display); font-weight: 500; color: var(--gold-light); letter-spacing: .06em; }
-.roster-table .is-off { color: rgba(182, 163, 173, .4); }
+.roster-table th, .roster-table td { padding: 16px; text-align: center; border-bottom: 1px solid var(--line-soft); border-left: 1px solid var(--line-soft); white-space: nowrap; }
+.roster-table th:first-child, .roster-table td:first-child { border-left: none; }
+.roster-table thead th { font-size: 10px; letter-spacing: .22em; text-transform: uppercase; color: var(--pink); background: var(--surface); position: sticky; top: 0; }
+.roster-table tbody th { font-family: var(--font-display); font-weight: 500; color: var(--gold-light); letter-spacing: .06em; text-align: left; background: var(--surface); }
+.roster-table tbody tr:nth-child(even) { background: rgba(255, 255, 255, .02); }
+.roster-table .is-off { color: rgba(182, 163, 173, .35); }
+.roster-table .is-on { color: var(--text); font-weight: 600; background: rgba(176, 24, 111, .08); }
 .roster-table .is-today { background: rgba(176, 24, 111, .14); }
+.roster-table .is-today.is-on { background: rgba(176, 24, 111, .22); }
 .roster-table thead .is-today { color: var(--gold-light); }
+.roster-table tbody tr:hover td, .roster-table tbody tr:hover th { background: rgba(255, 255, 255, .05); }
 .hours-table th, .hours-table td { padding: 12px 0; border-bottom: 1px solid var(--line-soft); text-align: left; font-weight: 400; }
 .hours-table td { text-align: right; color: var(--muted); }
 .hours-table .is-today th, .hours-table .is-today td { color: var(--gold-light); }
