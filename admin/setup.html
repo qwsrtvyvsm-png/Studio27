@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en-AU">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Admin Setup | Studio 27</title>
+  <meta name="robots" content="noindex, nofollow">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;700&family=Montserrat:wght@400;500;600;700&display=swap">
+  <link rel="stylesheet" href="../css/style.css">
+  <link rel="stylesheet" href="css/admin.css">
+</head>
+<body>
+  <div class="admin-auth">
+    <div class="form-panel">
+      <p class="eyebrow">First-time setup</p>
+      <h2 class="h3">Create your admin account</h2>
+      <p class="muted" style="margin-bottom:26px;font-size:13px">
+        This runs once. Choose your own login &mdash; nobody else will see these details.
+      </p>
+      <form class="form" id="setup-form">
+        <div class="field full">
+          <label for="s-email">Email <span class="req">*</span></label>
+          <input id="s-email" name="email" type="email" autocomplete="username" required>
+        </div>
+        <div class="field full">
+          <label for="s-password">Password <span class="req">*</span></label>
+          <input id="s-password" name="password" type="password" autocomplete="new-password" minlength="8" required>
+          <p class="hint">At least 8 characters.</p>
+        </div>
+        <div class="field full">
+          <label for="s-password2">Confirm password <span class="req">*</span></label>
+          <input id="s-password2" name="password2" type="password" autocomplete="new-password" minlength="8" required>
+        </div>
+        <div class="field full">
+          <button type="submit" class="btn btn--pink">Create account</button>
+          <p class="form-status" role="status"></p>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <script src="js/admin.js"></script>
+  <script>
+    (function () {
+      var form = document.getElementById('setup-form');
+      var status = form.querySelector('.form-status');
+
+      Admin.api('/auth/needs-setup').then(function (data) {
+        if (data && !data.needsSetup) location.href = 'login.html';
+      });
+
+      form.addEventListener('submit', function (e) {
+        e.preventDefault();
+        status.className = 'form-status';
+        status.textContent = '';
+
+        var email = form.email.value.trim();
+        var password = form.password.value;
+        var password2 = form.password2.value;
+        if (password !== password2) {
+          status.className = 'form-status is-error';
+          status.textContent = 'Passwords do not match.';
+          return;
+        }
+
+        Admin.api('/auth/setup', { method: 'POST', body: { email: email, password: password } })
+          .then(function () { location.href = 'index.html'; })
+          .catch(function (err) {
+            status.className = 'form-status is-error';
+            status.textContent = err.message;
+          });
+      });
+    })();
+  </script>
+</body>
+</html>

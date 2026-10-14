@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en-AU">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Admin Login | Studio 27</title>
+  <meta name="robots" content="noindex, nofollow">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;700&family=Montserrat:wght@400;500;600;700&display=swap">
+  <link rel="stylesheet" href="../css/style.css">
+  <link rel="stylesheet" href="css/admin.css">
+</head>
+<body>
+  <div class="admin-auth">
+    <div class="form-panel">
+      <p class="eyebrow">Studio 27</p>
+      <h2 class="h3">Admin login</h2>
+      <form class="form" id="login-form">
+        <div class="field full">
+          <label for="l-email">Email <span class="req">*</span></label>
+          <input id="l-email" name="email" type="email" autocomplete="username" required>
+        </div>
+        <div class="field full">
+          <label for="l-password">Password <span class="req">*</span></label>
+          <input id="l-password" name="password" type="password" autocomplete="current-password" required>
+        </div>
+        <div class="field full">
+          <button type="submit" class="btn btn--pink">Log in</button>
+          <p class="form-status" role="status"></p>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <script src="js/admin.js"></script>
+  <script>
+    (function () {
+      var form = document.getElementById('login-form');
+      var status = form.querySelector('.form-status');
+
+      Admin.api('/auth/needs-setup').then(function (data) {
+        if (data && data.needsSetup) location.href = 'setup.html';
+      });
+
+      form.addEventListener('submit', function (e) {
+        e.preventDefault();
+        status.className = 'form-status';
+        status.textContent = '';
+        Admin.api('/auth/login', {
+          method: 'POST',
+          body: { email: form.email.value.trim(), password: form.password.value }
+        })
+          .then(function () { location.href = 'index.html'; })
+          .catch(function (err) {
+            status.className = 'form-status is-error';
+            status.textContent = err.message;
+          });
+      });
+    })();
+  </script>
+</body>
+</html>

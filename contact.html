@@ -41,8 +41,7 @@
           <h2 class="h3">Request a booking</h2>
           <p class="muted" style="margin-bottom:26px;font-size:13px">Your booking isn&rsquo;t confirmed until we contact you. Your details are kept private.</p>
 
-          <!-- Front-end only: connect to a form service (e.g. Formspree) or backend to receive requests. -->
-          <form class="form" data-redirect="thank-you.html">
+          <form class="form" data-redirect="thank-you.html" data-endpoint="/api/enquiries">
             <div class="field">
               <label for="c-name">Name <span class="req">*</span></label>
               <input id="c-name" name="name" type="text" autocomplete="name" required>
