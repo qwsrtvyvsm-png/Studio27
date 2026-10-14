@@ -8,7 +8,8 @@
     { href: 'index.html', label: 'Dashboard', id: 'dashboard' },
     { href: 'models.html', label: 'Models & Roster', id: 'models' },
     { href: 'enquiries.html', label: 'Enquiries & Applications', id: 'enquiries' },
-    { href: 'settings.html', label: 'Site Settings', id: 'settings' }
+    { href: 'settings.html', label: 'Site Settings', id: 'settings' },
+    { href: 'content.html', label: 'Site Content', id: 'content' }
   ];
 
   function esc(s) {

@@ -33,6 +33,10 @@
               <svg width="16" height="16" viewBox="0 0 20 20" fill="none" aria-hidden="true"><path d="M4 2.5h3l1.5 4-2 1.3a10 10 0 0 0 4.7 4.7l1.3-2 4 1.5v3a1.5 1.5 0 0 1-1.6 1.5A14 14 0 0 1 2.5 4.1 1.5 1.5 0 0 1 4 2.5Z" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round"/></svg>
               <a data-site="phone" data-link="tel"></a>
             </li>
+            <li data-optional hidden>
+              <svg width="16" height="16" viewBox="0 0 20 20" fill="none" aria-hidden="true"><path d="M4 2.5h3l1.5 4-2 1.3a10 10 0 0 0 4.7 4.7l1.3-2 4 1.5v3a1.5 1.5 0 0 1-1.6 1.5A14 14 0 0 1 2.5 4.1 1.5 1.5 0 0 1 4 2.5Z" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round"/></svg>
+              <a data-site="phone2" data-link="tel"></a>
+            </li>
             <li>
               <svg width="16" height="16" viewBox="0 0 20 20" fill="none" aria-hidden="true"><circle cx="10" cy="10" r="7.5" stroke="currentColor" stroke-width="1.4"/><path d="M10 5.5V10l3 2" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg>
               <span data-site="hoursSummary"></span>
@@ -60,11 +64,7 @@
       <div class="container split">
         <div>
           <p class="script">Welcome to Studio 27&hellip;</p>
-          <p class="lead">A sanctuary designed for the modern gentleman &mdash; where time slows down and every detail is taken care of.</p>
-          <div class="split__cols">
-            <p>[Introduce the studio here: who you are, what makes the experience different, and the atmosphere guests can expect when they walk through the door.]</p>
-            <p>[Talk about comfort and discretion: private rooms, a warm welcome, and a team that takes pride in looking after every guest.]</p>
-          </div>
+          <div data-content="welcome"></div>
           <div class="btn-row">
             <a class="btn btn--pink" href="rates.html">View Rates</a>
             <a class="btn btn--ghost" href="about.html">About Us</a>
@@ -86,23 +86,7 @@
           <p class="eyebrow">The Experience</p>
           <h2 class="h2">Every detail, <em>considered</em></h2>
         </div>
-        <div class="cards">
-          <article class="card">
-            <span class="card__num">i.</span>
-            <h3 class="h3">Private Rooms</h3>
-            <p>[Describe your rooms &mdash; ambience, amenities, showers, fresh linen.]</p>
-          </article>
-          <article class="card">
-            <span class="card__num">ii.</span>
-            <h3 class="h3">Total Discretion</h3>
-            <p>[Describe your approach to privacy &mdash; discreet entry, parking, no names on statements.]</p>
-          </article>
-          <article class="card">
-            <span class="card__num">iii.</span>
-            <h3 class="h3">Open Late</h3>
-            <p>[Open 7 days with late-night hours. Bookings and walk-ins welcome.]</p>
-          </article>
-        </div>
+        <div class="cards" data-content="experience"></div>
       </div>
     </section>
 
@@ -159,6 +143,17 @@
                <iframe src="https://www.google.com/maps/embed?pb=..." loading="lazy" title="Map to Studio 27"></iframe> -->
           <p>Map coming soon</p>
         </div>
+      </div>
+    </section>
+
+    <!-- FAQ -->
+    <section class="section">
+      <div class="container">
+        <div class="section-head center">
+          <p class="eyebrow">Questions</p>
+          <h2 class="h2">Frequently <em>asked</em></h2>
+        </div>
+        <div data-content="faq"></div>
       </div>
     </section>
 

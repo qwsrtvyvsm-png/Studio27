@@ -32,6 +32,7 @@
           '<div class="admin-card-row"><span>Review new enquiries &amp; applications</span><a class="btn btn--small btn--ghost" href="enquiries.html">Open inbox</a></div>' +
           '<div class="admin-card-row"><span>Manage models, photos &amp; the roster</span><a class="btn btn--small btn--ghost" href="models.html">Manage roster</a></div>' +
           '<div class="admin-card-row"><span>Edit hours, rates &amp; contact details</span><a class="btn btn--small btn--ghost" href="settings.html">Edit settings</a></div>' +
+          '<div class="admin-card-row"><span>Edit hero, about, experience &amp; FAQ text</span><a class="btn btn--small btn--ghost" href="content.html">Edit content</a></div>' +
           '</div>';
       })
       .catch(function (err) {

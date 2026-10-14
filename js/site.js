@@ -22,6 +22,7 @@
     { href: 'ladies.html', label: 'Ladies', id: 'models' },
     { href: 'roster.html', label: 'Roster & Hours', id: 'roster' },
     { href: 'rates.html', label: 'Rates', id: 'rates' },
+    { href: 'news.html', label: 'News & Updates', id: 'news' },
     { href: 'contact.html', label: 'Contact', id: 'contact' }
   ];
 
@@ -72,6 +73,7 @@
             '<h3>Visit</h3>' +
             '<address>' + esc(SITE.address) + '<br>' + esc(SITE.suburb) + '</address>' +
             '<p><a href="' + tel(SITE.phone) + '">' + esc(SITE.phone) + '</a></p>' +
+            (SITE.phone2 ? '<p><a href="' + tel(SITE.phone2) + '">' + esc(SITE.phone2) + '</a></p>' : '') +
             '<p>' + esc(SITE.hoursSummary) + '</p>' +
           '</div>' +
           '<div>' +
@@ -83,7 +85,6 @@
               '<li><a href="rates.html">Rates &amp; Services</a></li>' +
               '<li><a href="house-rules.html">House Rules</a></li>' +
               '<li><a href="news.html">News &amp; Updates</a></li>' +
-              '<li><a href="faq.html">FAQ</a></li>' +
               '<li><a href="work-with-us.html">Apply Now</a></li>' +
             '</ul>' +
           '</div>' +
@@ -151,11 +152,64 @@
   function fillSiteFields() {
     document.querySelectorAll('[data-site]').forEach(function (el) {
       var v = SITE[el.dataset.site];
-      if (v == null) return;
+      var optionalWrap = el.closest('[data-optional]');
+      if (v == null || v === '') {
+        if (optionalWrap) optionalWrap.hidden = true;
+        return;
+      }
+      if (optionalWrap) optionalWrap.hidden = false;
       el.textContent = v;
       if (el.dataset.link === 'tel') el.href = tel(v);
       if (el.dataset.link === 'mailto') el.href = 'mailto:' + v;
     });
+  }
+
+  function paragraphsHTML(paragraphs) {
+    return (paragraphs || []).map(function (p) { return '<p>' + esc(p) + '</p>'; }).join('');
+  }
+
+  function cardsHTML(items, numerals) {
+    return (items || []).map(function (item, i) {
+      return '<article class="card"><span class="card__num">' + (numerals[i] || '') + '.</span>' +
+        '<h3 class="h3">' + esc(item.heading) + '</h3><p>' + esc(item.body) + '</p></article>';
+    }).join('');
+  }
+
+  function renderWelcome(el) {
+    var c = (SITE.content && SITE.content.welcome) || {};
+    el.innerHTML = '<p class="lead">' + esc(c.lead || '') + '</p>' +
+      '<div class="split__cols">' + paragraphsHTML(c.paragraphs) + '</div>';
+  }
+
+  function renderExperience(el) {
+    var items = (SITE.content && SITE.content.experience) || [];
+    el.innerHTML = cardsHTML(items, ['i', 'ii', 'iii', 'iv', 'v', 'vi']);
+  }
+
+  function renderAboutIntro(el) {
+    var c = (SITE.content && SITE.content.about) || {};
+    el.innerHTML = '<p class="lead">' + esc(c.lead || '') + '</p>' +
+      '<div class="split__cols">' + paragraphsHTML(c.paragraphs) + '</div>';
+  }
+
+  function renderAboutValues(el) {
+    var values = (SITE.content && SITE.content.about && SITE.content.about.values) || [];
+    el.innerHTML = cardsHTML(values, ['i', 'ii', 'iii', 'iv', 'v', 'vi']);
+  }
+
+  function renderFaq(el) {
+    var groups = (SITE.content && SITE.content.faq) || [];
+    el.innerHTML = '<div class="faq">' + groups.map(function (g) {
+      var items = (g.items || []).map(function (item) {
+        return '<details><summary>' + esc(item.question) + '</summary><div><p>' + esc(item.answer) + '</p></div></details>';
+      }).join('');
+      return '<div class="faq-group"><p class="eyebrow">' + esc(g.title) + '</p>' + items + '</div>';
+    }).join('') + '</div>';
+  }
+
+  function renderNews(el) {
+    var c = (SITE.content && SITE.content.news) || {};
+    el.innerHTML = paragraphsHTML(c.paragraphs);
   }
 
   function renderRates(el) {
@@ -324,6 +378,12 @@
     document.querySelectorAll('[data-today]').forEach(renderToday);
     document.querySelectorAll('[data-rates]').forEach(renderRates);
     document.querySelectorAll('select[data-model-select]').forEach(fillModelSelect);
+    document.querySelectorAll('[data-content="welcome"]').forEach(renderWelcome);
+    document.querySelectorAll('[data-content="experience"]').forEach(renderExperience);
+    document.querySelectorAll('[data-content="aboutIntro"]').forEach(renderAboutIntro);
+    document.querySelectorAll('[data-content="aboutValues"]').forEach(renderAboutValues);
+    document.querySelectorAll('[data-content="faq"]').forEach(renderFaq);
+    document.querySelectorAll('[data-content="news"]').forEach(renderNews);
   }
 
   /* Pulls live content from the API and re-renders over the data.js

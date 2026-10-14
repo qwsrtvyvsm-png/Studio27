@@ -132,6 +132,7 @@
         field('Address', 'address', data.address) +
         field('Suburb / state / postcode', 'suburb', data.suburb) +
         field('Phone', 'phone', data.phone) +
+        field('Second phone (optional)', 'phone2', data.phone2) +
         field('Booking email', 'email', data.email, 'email') +
         field('Recruitment email', 'recruitEmail', data.recruitEmail, 'email') +
         field('Parking details', 'parking', data.parking) +
@@ -255,7 +256,7 @@
       var next = Object.assign({}, data);
       next.hours = {};
       DAYS.forEach(function (d) { next.hours[d] = fd.get('hours_' + d) || ''; });
-      ['legalName', 'registrationNo', 'abn', 'licence', 'address', 'suburb', 'phone', 'email', 'recruitEmail', 'parking', 'payment', 'hoursSummary'].forEach(
+      ['legalName', 'registrationNo', 'abn', 'licence', 'address', 'suburb', 'phone', 'phone2', 'email', 'recruitEmail', 'parking', 'payment', 'hoursSummary'].forEach(
         function (key) { next[key] = fd.get(key) || ''; }
       );
       next.rates = collectRates();

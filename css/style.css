@@ -303,6 +303,7 @@ ul { padding: 0; list-style: none; }
 .hero__dock-inner { display: flex; flex-direction: column; align-items: center; gap: 22px; padding-top: 28px; padding-bottom: 34px; }
 .dock__info { display: flex; flex-wrap: wrap; justify-content: center; gap: 10px 0; font-size: 13px; letter-spacing: .05em; color: var(--text); }
 .dock__info li { display: flex; align-items: center; gap: 10px; padding: 0 28px; }
+.dock__info li[hidden] { display: none; }
 .dock__info li + li { border-left: 1px solid var(--line); }
 .dock__info svg { flex: none; color: var(--pink); }
 .dock__info a { color: var(--gold-light); font-weight: 600; letter-spacing: .08em; }
