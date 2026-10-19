@@ -22,6 +22,7 @@
     { href: 'ladies.html', label: 'Ladies', id: 'models' },
     { href: 'roster.html', label: 'Roster & Hours', id: 'roster' },
     { href: 'rates.html', label: 'Rates', id: 'rates' },
+    { href: 'news.html', label: 'News & Updates', id: 'news' },
     { href: 'contact.html', label: 'Contact', id: 'contact' }
   ];
 
@@ -59,9 +60,8 @@
   }
 
   /* ---------- Footer ---------- */
-  function footerHTML() {
+  function footerInnerHTML() {
     return '' +
-      '<footer class="site-footer">' +
         '<div class="container footer-grid">' +
           '<div class="footer-brand">' +
             '<a class="brand" href="index.html"><span class="brand__mark">27</span>' +
@@ -73,6 +73,7 @@
             '<h3>Visit</h3>' +
             '<address>' + esc(SITE.address) + '<br>' + esc(SITE.suburb) + '</address>' +
             '<p><a href="' + tel(SITE.phone) + '">' + esc(SITE.phone) + '</a></p>' +
+            (SITE.phone2 ? '<p><a href="' + tel(SITE.phone2) + '">' + esc(SITE.phone2) + '</a></p>' : '') +
             '<p>' + esc(SITE.hoursSummary) + '</p>' +
           '</div>' +
           '<div>' +
@@ -84,7 +85,6 @@
               '<li><a href="rates.html">Rates &amp; Services</a></li>' +
               '<li><a href="house-rules.html">House Rules</a></li>' +
               '<li><a href="news.html">News &amp; Updates</a></li>' +
-              '<li><a href="faq.html">FAQ</a></li>' +
               '<li><a href="work-with-us.html">Apply Now</a></li>' +
             '</ul>' +
           '</div>' +
@@ -110,8 +110,7 @@
           '</dl>' +
           '<p class="copyright">&copy; ' + new Date().getFullYear() + ' ' + esc(SITE.legalName) + ' trading as Studio 27. All rights reserved. ' +
           'The Studio 27 name, logo, images and content are protected by copyright and may not be reproduced without written permission.</p>' +
-        '</div>' +
-      '</footer>';
+        '</div>';
   }
 
   /* ---------- Age gate ---------- */
@@ -153,11 +152,92 @@
   function fillSiteFields() {
     document.querySelectorAll('[data-site]').forEach(function (el) {
       var v = SITE[el.dataset.site];
-      if (v == null) return;
+      var optionalWrap = el.closest('[data-optional]');
+      if (v == null || v === '') {
+        if (optionalWrap) optionalWrap.hidden = true;
+        return;
+      }
+      if (optionalWrap) optionalWrap.hidden = false;
       el.textContent = v;
       if (el.dataset.link === 'tel') el.href = tel(v);
       if (el.dataset.link === 'mailto') el.href = 'mailto:' + v;
     });
+  }
+
+  function paragraphsHTML(paragraphs) {
+    return (paragraphs || []).map(function (p) { return '<p>' + esc(p) + '</p>'; }).join('');
+  }
+
+  function cardsHTML(items, numerals) {
+    return (items || []).map(function (item, i) {
+      return '<article class="card"><span class="card__num">' + (numerals[i] || '') + '.</span>' +
+        '<h3 class="h3">' + esc(item.heading) + '</h3><p>' + esc(item.body) + '</p></article>';
+    }).join('');
+  }
+
+  function renderWelcome(el) {
+    var c = (SITE.content && SITE.content.welcome) || {};
+    el.innerHTML = '<p class="lead">' + esc(c.lead || '') + '</p>' +
+      '<div class="split__cols">' + paragraphsHTML(c.paragraphs) + '</div>';
+  }
+
+  function renderExperience(el) {
+    var items = (SITE.content && SITE.content.experience) || [];
+    el.innerHTML = cardsHTML(items, ['i', 'ii', 'iii', 'iv', 'v', 'vi']);
+  }
+
+  function renderAboutIntro(el) {
+    var c = (SITE.content && SITE.content.about) || {};
+    el.innerHTML = '<p class="lead">' + esc(c.lead || '') + '</p>' +
+      '<div class="split__cols">' + paragraphsHTML(c.paragraphs) + '</div>';
+  }
+
+  function renderAboutValues(el) {
+    var values = (SITE.content && SITE.content.about && SITE.content.about.values) || [];
+    el.innerHTML = cardsHTML(values, ['i', 'ii', 'iii', 'iv', 'v', 'vi']);
+  }
+
+  function renderFaq(el) {
+    var groups = (SITE.content && SITE.content.faq) || [];
+    el.innerHTML = '<div class="faq">' + groups.map(function (g) {
+      var items = (g.items || []).map(function (item) {
+        return '<details><summary>' + esc(item.question) + '</summary><div><p>' + esc(item.answer) + '</p></div></details>';
+      }).join('');
+      return '<div class="faq-group"><p class="eyebrow">' + esc(g.title) + '</p>' + items + '</div>';
+    }).join('') + '</div>';
+  }
+
+  function renderNews(el) {
+    var c = (SITE.content && SITE.content.news) || {};
+    el.innerHTML = paragraphsHTML(c.paragraphs);
+  }
+
+  function renderRates(el) {
+    var rates = SITE.rates || { sessions: [], services: [], servicesNote: '' };
+    var sessionsHTML = (rates.sessions || [])
+      .map(function (s) {
+        var incall = s.incallPrice != null ? s.incallPrice : s.price;
+        var outcall = s.outcallPrice != null ? s.outcallPrice : s.price;
+        return '<li><span class="name">' + esc(s.name) + '</span><span class="dots"></span>' +
+          '<span class="price-pair">' +
+          '<span class="price"><small>Incall</small>$' + esc(incall) + '</span>' +
+          '<span class="price"><small>Outcall</small>$' + esc(outcall) + '</span>' +
+          '</span></li>';
+      })
+      .join('');
+    var servicesHTML = (rates.services || [])
+      .map(function (s) {
+        return '<li><span class="name">' + esc(s.name) + (s.description ? '<small>' + esc(s.description) + '</small>' : '') +
+          '</span><span class="dots"></span><span class="price">$' + esc(s.price) + '</span></li>';
+      })
+      .join('');
+    el.innerHTML = '' +
+      '<div class="rate-menu"><h2 class="h3">Sessions</h2>' +
+      '<p>All sessions include a private room and shower facilities.</p>' +
+      '<ul class="rate-list">' + (sessionsHTML || '<li>Rates coming soon &mdash; please call to ask.</li>') + '</ul></div>' +
+      '<div class="rate-menu"><h2 class="h3">Services</h2>' +
+      '<p>' + esc(rates.servicesNote || '') + '</p>' +
+      '<ul class="rate-list">' + (servicesHTML || '<li>Services coming soon &mdash; please call to ask.</li>') + '</ul></div>';
   }
 
   function renderHours(el) {
@@ -219,6 +299,9 @@
 
   function fillModelSelect(sel) {
     var wanted = new URLSearchParams(location.search).get('model');
+    // Re-run safely when live data replaces the data.js fallback: keep
+    // only the first option (the placeholder) and rebuild the rest.
+    while (sel.options.length > 1) sel.remove(1);
     MODELS.forEach(function (m) {
       var o = document.createElement('option');
       o.value = o.textContent = m.name;
@@ -227,10 +310,10 @@
     });
   }
 
-  /* ---------- Forms (front-end only) ----------
-     Each form redirects to its data-redirect page once valid.
-     To actually receive submissions, point the form at a form
-     service (e.g. Formspree) or your own backend.               */
+  /* ---------- Forms ----------
+     Forms with a data-endpoint post to the API (see server/routes/).
+     Forms without one just redirect once valid (used nowhere currently,
+     kept as a harmless fallback).                                      */
   function wireForms() {
     document.querySelectorAll('form[data-redirect]').forEach(function (form) {
       form.addEventListener('submit', function (e) {
@@ -241,8 +324,93 @@
           if (status) status.textContent = 'Please complete the required fields.';
           return;
         }
-        location.href = form.dataset.redirect;
+
+        var endpoint = form.dataset.endpoint;
+        if (!endpoint) {
+          location.href = form.dataset.redirect;
+          return;
+        }
+
+        var submitBtn = form.querySelector('button[type="submit"]');
+        if (submitBtn) submitBtn.disabled = true;
+        if (status) status.textContent = 'Sending…';
+
+        fetch(endpoint, { method: 'POST', body: new FormData(form) })
+          .then(function (res) {
+            return res
+              .json()
+              .catch(function () { return null; })
+              .then(function (data) {
+                if (!res.ok) throw new Error((data && data.error) || 'Something went wrong. Please try again.');
+                return data;
+              });
+          })
+          .then(function () {
+            location.href = form.dataset.redirect;
+          })
+          .catch(function (err) {
+            if (submitBtn) submitBtn.disabled = false;
+            if (status) status.textContent = err.message;
+          });
       });
+    });
+  }
+
+  /* ---------- Render everything that depends on SITE/MODELS ---------- */
+  function renderFooter() {
+    // Reuse the same node across re-renders (rather than replacing it) so
+    // that if the age gate already applied `inert` to it, that stays intact.
+    var el = document.querySelector('.site-footer');
+    if (!el) {
+      el = document.createElement('footer');
+      el.className = 'site-footer';
+      document.body.appendChild(el);
+    }
+    el.innerHTML = footerInnerHTML();
+  }
+
+  function renderContent() {
+    renderFooter();
+    fillSiteFields();
+    document.querySelectorAll('[data-hours]').forEach(renderHours);
+    document.querySelectorAll('[data-models]').forEach(renderModels);
+    document.querySelectorAll('[data-roster]').forEach(renderRoster);
+    document.querySelectorAll('[data-today]').forEach(renderToday);
+    document.querySelectorAll('[data-rates]').forEach(renderRates);
+    document.querySelectorAll('select[data-model-select]').forEach(fillModelSelect);
+    document.querySelectorAll('[data-content="welcome"]').forEach(renderWelcome);
+    document.querySelectorAll('[data-content="experience"]').forEach(renderExperience);
+    document.querySelectorAll('[data-content="aboutIntro"]').forEach(renderAboutIntro);
+    document.querySelectorAll('[data-content="aboutValues"]').forEach(renderAboutValues);
+    document.querySelectorAll('[data-content="faq"]').forEach(renderFaq);
+    document.querySelectorAll('[data-content="news"]').forEach(renderNews);
+  }
+
+  /* Pulls live content from the API and re-renders over the data.js
+     fallback once it arrives, so pages never sit blank on first paint
+     and still work if the API is briefly unreachable.                */
+  function loadLiveContent() {
+    var fetchJSON = function (url) {
+      return fetch(url)
+        .then(function (res) { return res.ok ? res.json() : null; })
+        .catch(function () { return null; });
+    };
+
+    Promise.all([fetchJSON('/api/public/site'), fetchJSON('/api/public/models')]).then(function (results) {
+      var liveSite = results[0];
+      var liveModels = results[1];
+      var changed = false;
+
+      if (liveSite && Object.keys(liveSite).length) {
+        Object.assign(SITE, liveSite);
+        changed = true;
+      }
+      if (Array.isArray(liveModels) && liveModels.length) {
+        MODELS.length = 0;
+        liveModels.forEach(function (m) { MODELS.push(m); });
+        changed = true;
+      }
+      if (changed) renderContent();
     });
   }
 
@@ -252,7 +420,6 @@
     var page = body.dataset.page || '';
 
     body.insertAdjacentHTML('afterbegin', headerHTML(page));
-    body.insertAdjacentHTML('beforeend', footerHTML());
 
     // Mobile nav
     var toggle = document.querySelector('.nav-toggle');
@@ -269,12 +436,8 @@
     window.addEventListener('scroll', onScroll, { passive: true });
     onScroll();
 
-    fillSiteFields();
-    document.querySelectorAll('[data-hours]').forEach(renderHours);
-    document.querySelectorAll('[data-models]').forEach(renderModels);
-    document.querySelectorAll('[data-roster]').forEach(renderRoster);
-    document.querySelectorAll('[data-today]').forEach(renderToday);
-    document.querySelectorAll('select[data-model-select]').forEach(fillModelSelect);
+    renderContent();
+    loadLiveContent();
     wireForms();
 
     // Legal pages are readable without passing the gate
