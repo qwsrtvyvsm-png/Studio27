@@ -69,8 +69,8 @@ router.get('/me', async (req, res) => {
   if (!(req.session && req.session.userId)) {
     return res.json({ authenticated: false });
   }
-  const { rows } = await pool.query('SELECT email FROM admin_users WHERE id = $1', [req.session.userId]);
-  res.json({ authenticated: true, email: rows[0] ? rows[0].email : null });
+  const { rows } = await pool.query('SELECT id, email FROM admin_users WHERE id = $1', [req.session.userId]);
+  res.json({ authenticated: true, id: rows[0] ? rows[0].id : null, email: rows[0] ? rows[0].email : null });
 });
 
 router.put('/password', requireAuth, authLimiter, async (req, res) => {
@@ -115,6 +115,48 @@ router.put('/email', requireAuth, authLimiter, async (req, res) => {
     throw err;
   }
   res.json({ ok: true, email: newEmail });
+});
+
+router.get('/admin-users', requireAuth, async (req, res) => {
+  const { rows } = await pool.query('SELECT id, email, created_at FROM admin_users ORDER BY created_at ASC');
+  res.json(rows);
+});
+
+router.post('/admin-users', requireAuth, authLimiter, async (req, res) => {
+  const email = (req.body.email || '').trim().toLowerCase();
+  const password = req.body.password || '';
+  if (!email || !email.includes('@') || !password || password.length < 8) {
+    return res.status(400).json({ error: 'A valid email and a password of at least 8 characters are required.' });
+  }
+
+  const hash = await bcrypt.hash(password, 12);
+  try {
+    const inserted = await pool.query(
+      'INSERT INTO admin_users (email, password_hash) VALUES ($1, $2) RETURNING id, email, created_at',
+      [email, hash]
+    );
+    res.status(201).json(inserted.rows[0]);
+  } catch (err) {
+    if (err.code === '23505') {
+      return res.status(409).json({ error: 'That email is already in use.' });
+    }
+    throw err;
+  }
+});
+
+router.delete('/admin-users/:id', requireAuth, authLimiter, async (req, res) => {
+  const id = Number(req.params.id);
+  if (id === req.session.userId) {
+    return res.status(400).json({ error: 'You cannot remove your own account.' });
+  }
+
+  const { rows } = await pool.query('SELECT COUNT(*)::int AS count FROM admin_users');
+  if (rows[0].count <= 1) {
+    return res.status(400).json({ error: 'At least one admin account must remain.' });
+  }
+
+  await pool.query('DELETE FROM admin_users WHERE id = $1', [id]);
+  res.json({ ok: true });
 });
 
 module.exports = router;
