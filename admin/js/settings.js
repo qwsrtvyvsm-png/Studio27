@@ -5,18 +5,22 @@
   var DAYS = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
   var data = {};
   var accountEmail = '';
+  var accountId = null;
+  var adminUsers = [];
 
   Admin.requireSession(function () {
     Admin.mountShell('settings', 'Site Settings', 'Edit hours, rates and the contact/compliance details shown on the public site.');
     var content = document.getElementById('admin-content');
     content.innerHTML = '<p class="muted">Loading&hellip;</p>';
 
-    Promise.all([Admin.api('/settings'), Admin.api('/auth/me')])
+    Promise.all([Admin.api('/settings'), Admin.api('/auth/me'), Admin.api('/auth/admin-users')])
       .then(function (results) {
         data = results[0] || {};
         data.hours = data.hours || {};
         data.rates = data.rates || { sessions: [], services: [], servicesNote: '' };
         accountEmail = (results[1] && results[1].email) || '';
+        accountId = results[1] && results[1].id != null ? results[1].id : null;
+        adminUsers = results[2] || [];
         render();
       })
       .catch(function (err) {
@@ -34,12 +38,17 @@
         '<p class="form-status" role="status"></p>' +
         '</div>' +
         '</form>' +
-        panel('Account', accountFields());
+        panel('Account', accountFields()) +
+        panel('Admin users', adminUsersFields());
 
       wireRateRows();
       document.getElementById('settings-form').addEventListener('submit', onSubmit);
       document.getElementById('email-form').addEventListener('submit', onEmailSubmit);
       document.getElementById('password-form').addEventListener('submit', onPasswordSubmit);
+      document.getElementById('add-admin-form').addEventListener('submit', onAddAdminSubmit);
+      content.querySelectorAll('[data-remove-admin]').forEach(function (btn) {
+        btn.addEventListener('click', function () { onRemoveAdmin(btn.dataset.removeAdmin); });
+      });
     }
 
     function accountFields() {
@@ -106,6 +115,62 @@
         .catch(function (err) {
           status.className = 'form-status is-error';
           status.textContent = err.message;
+        });
+    }
+
+    function adminUsersFields() {
+      var rows = adminUsers.map(function (u) {
+        var isSelf = u.id === accountId;
+        return (
+          '<div class="rate-editor-row" style="grid-template-columns:1fr auto">' +
+          '<span>' + esc(u.email) + (isSelf ? ' <span class="hint">(you)</span>' : '') + '</span>' +
+          (isSelf ? '<span></span>' : '<button type="button" data-remove-admin="' + u.id + '">&times;</button>') +
+          '</div>'
+        );
+      }).join('');
+
+      return (
+        '<div id="admin-users-list" style="margin-bottom:18px">' + rows + '</div>' +
+        '<form id="add-admin-form" class="form">' +
+        '<div class="field"><label for="a-email">Email</label><input id="a-email" name="email" type="email" autocomplete="off" required></div>' +
+        '<div class="field"><label for="a-password">Password</label><input id="a-password" name="password" type="password" autocomplete="new-password" minlength="8" required></div>' +
+        '<div class="field full">' +
+        '<button type="submit" class="btn btn--ghost">Add admin user</button>' +
+        '<p class="form-status" role="status"></p>' +
+        '</div>' +
+        '</form>'
+      );
+    }
+
+    function onAddAdminSubmit(e) {
+      e.preventDefault();
+      var form = e.target;
+      var status = form.querySelector('.form-status');
+      status.textContent = '';
+      status.className = 'form-status';
+      Admin.api('/auth/admin-users', {
+        method: 'POST',
+        body: { email: form.email.value, password: form.password.value }
+      })
+        .then(function (user) {
+          adminUsers.push(user);
+          render();
+        })
+        .catch(function (err) {
+          status.className = 'form-status is-error';
+          status.textContent = err.message;
+        });
+    }
+
+    function onRemoveAdmin(id) {
+      if (!window.confirm('Remove this admin user? They will no longer be able to sign in.')) return;
+      Admin.api('/auth/admin-users/' + id, { method: 'DELETE' })
+        .then(function () {
+          adminUsers = adminUsers.filter(function (u) { return String(u.id) !== String(id); });
+          render();
+        })
+        .catch(function (err) {
+          window.alert(err.message);
         });
     }
 
