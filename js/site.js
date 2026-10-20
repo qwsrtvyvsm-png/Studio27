@@ -59,6 +59,21 @@
       '</header>';
   }
 
+  /* ---------- Social links ---------- */
+  function socialHTML() {
+    var ICONS = {
+      instagram: '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true"><rect x="2.5" y="2.5" width="19" height="19" rx="5" stroke="currentColor" stroke-width="1.6"/><circle cx="12" cy="12" r="4.3" stroke="currentColor" stroke-width="1.6"/><circle cx="17.3" cy="6.7" r="1.1" fill="currentColor"/></svg>',
+      x: '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M3 3l7.5 9.2L3.4 21h2.3l6-6.9L17 21h3.6l-7.8-9.6L20.3 3H18l-5.6 6.4L7.3 3H3Z" fill="currentColor"/></svg>',
+      reddit: '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true"><circle cx="12" cy="14.2" r="7.3" stroke="currentColor" stroke-width="1.6"/><circle cx="9" cy="14" r="1.15" fill="currentColor"/><circle cx="15" cy="14" r="1.15" fill="currentColor"/><path d="M8.7 17c.9.7 1.9 1 3.3 1s2.4-.3 3.3-1" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/><path d="M12 6.9V4.3m0 0h2.2M12 4.3H9.8" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/><circle cx="12" cy="4.3" r="1.1" fill="currentColor"/></svg>'
+    };
+    var LABELS = { instagram: 'Instagram', x: 'X (Twitter)', reddit: 'Reddit' };
+    var social = SITE.social || {};
+    var links = Object.keys(ICONS).filter(function (key) { return social[key]; }).map(function (key) {
+      return '<a class="social-links__item" href="' + esc(social[key]) + '" target="_blank" rel="noopener noreferrer"><span class="sr-only">' + LABELS[key] + '</span>' + ICONS[key] + '</a>';
+    }).join('');
+    return links ? '<div class="social-links">' + links + '</div>' : '';
+  }
+
   /* ---------- Footer ---------- */
   function footerInnerHTML() {
     return '' +
@@ -67,6 +82,7 @@
             '<a class="brand" href="index.html"><span class="brand__mark">27</span>' +
             '<span class="brand__text"><span class="brand__name">Studio 27</span></span></a>' +
             '<p class="footer-tagline">' + esc(SITE.tagline) + '</p>' +
+            socialHTML() +
             '<p class="age-badge"><span>18+</span> This site is intended for adults aged 18 and over.</p>' +
           '</div>' +
           '<div>' +

@@ -23,6 +23,13 @@ const SITE = {
   email: '[bookings@studio27.com.au]',
   recruitEmail: '[jobs@studio27.com.au]',
   parking: '[Parking details, e.g. free parking at rear]',
+
+  // Social media
+  social: {
+    instagram: 'https://www.instagram.com/studio27.adl',
+    x: 'https://x.com/twentysevenadl',
+    reddit: 'https://www.reddit.com/u/OkMetal1969'
+  },
   payment: '[Accepted payment methods, e.g. cash & card]',
 
   // Opening hours

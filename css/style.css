@@ -603,6 +603,12 @@ ul { padding: 0; list-style: none; }
 .site-footer ul a { color: var(--muted); }
 .site-footer ul a:hover { color: var(--gold-light); }
 .footer-tagline { margin: 16px 0 18px; font-family: var(--font-serif); font-style: italic; font-size: 1.1rem; }
+.social-links { display: flex; gap: 10px; margin-bottom: 22px; }
+.social-links__item {
+  display: grid; place-items: center; width: 36px; height: 36px; border-radius: 50%;
+  border: 1px solid var(--line); color: var(--muted); transition: color .2s, border-color .2s;
+}
+.social-links__item:hover { color: var(--gold-light); border-color: var(--gold-light); }
 .age-badge { display: flex; align-items: center; gap: 12px; font-size: 12px; }
 .age-badge span {
   flex: none; display: grid; place-items: center; width: 40px; height: 40px; border-radius: 50%;
