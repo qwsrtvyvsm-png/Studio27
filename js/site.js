@@ -213,7 +213,7 @@
   }
 
   function renderRates(el) {
-    var rates = SITE.rates || { sessions: [], services: [], servicesNote: '' };
+    var rates = SITE.rates || { sessions: [], servicesNote: '' };
     var sessionsHTML = (rates.sessions || [])
       .map(function (s) {
         var incall = s.incallPrice != null ? s.incallPrice : s.price;
@@ -225,19 +225,11 @@
           '</span></li>';
       })
       .join('');
-    var servicesHTML = (rates.services || [])
-      .map(function (s) {
-        return '<li><span class="name">' + esc(s.name) + (s.description ? '<small>' + esc(s.description) + '</small>' : '') +
-          '</span><span class="dots"></span><span class="price">$' + esc(s.price) + '</span></li>';
-      })
-      .join('');
     el.innerHTML = '' +
       '<div class="rate-menu"><h2 class="h3">Sessions</h2>' +
       '<p>All sessions include a private room and shower facilities.</p>' +
       '<ul class="rate-list">' + (sessionsHTML || '<li>Rates coming soon &mdash; please call to ask.</li>') + '</ul></div>' +
-      '<div class="rate-menu"><h2 class="h3">Services</h2>' +
-      '<p>' + esc(rates.servicesNote || '') + '</p>' +
-      '<ul class="rate-list">' + (servicesHTML || '<li>Services coming soon &mdash; please call to ask.</li>') + '</ul></div>';
+      '<p class="notice">' + esc(rates.servicesNote || '') + '</p>';
   }
 
   function renderHours(el) {

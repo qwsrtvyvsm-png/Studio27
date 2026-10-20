@@ -47,13 +47,7 @@ const SITE = {
       { name: '90 minutes', incallPrice: '[000]', outcallPrice: '[000]' },
       { name: '2 hours', incallPrice: '[000]', outcallPrice: '[000]' }
     ],
-    servicesNote: '[Short note about how services are agreed.]',
-    services: [
-      { name: '[Service name]', description: '[Short description]', price: '[000]' },
-      { name: '[Service name]', description: '[Short description]', price: '[000]' },
-      { name: '[Service name]', description: '[Short description]', price: '[000]' },
-      { name: '[Service name]', description: '[Short description]', price: '[000]' }
-    ]
+    servicesNote: 'Services are to be discussed in private room with chosen lady.'
   },
 
   // Editable page copy (admin dashboard — Site Content). This is the
