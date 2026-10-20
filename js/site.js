@@ -82,7 +82,7 @@
               '<li><a href="about.html">About Us</a></li>' +
               '<li><a href="ladies.html">Ladies</a></li>' +
               '<li><a href="roster.html">Roster &amp; Hours</a></li>' +
-              '<li><a href="rates.html">Rates &amp; Services</a></li>' +
+              '<li><a href="rates.html">Rates</a></li>' +
               '<li><a href="house-rules.html">House Rules</a></li>' +
               '<li><a href="news.html">News &amp; Updates</a></li>' +
               '<li><a href="work-with-us.html">Apply Now</a></li>' +
