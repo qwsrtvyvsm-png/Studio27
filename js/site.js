@@ -20,7 +20,7 @@
     { href: 'index.html', label: 'Home', id: 'home' },
     { href: 'about.html', label: 'About', id: 'about' },
     { href: 'ladies.html', label: 'Ladies', id: 'models' },
-    { href: 'roster.html', label: 'Roster & Hours', id: 'roster' },
+    { href: 'roster.html', label: 'Roster', id: 'roster' },
     { href: 'rates.html', label: 'Rates', id: 'rates' },
     { href: 'news.html', label: 'News & Updates', id: 'news' },
     { href: 'contact.html', label: 'Contact', id: 'contact' }
@@ -46,7 +46,7 @@
         '<div class="container site-header__inner">' +
           '<a class="brand" href="index.html" aria-label="Studio 27 home">' +
             '<span class="brand__mark">27</span>' +
-            '<span class="brand__text"><span class="brand__name">Studio 27</span><span class="brand__sub">Men&rsquo;s Studio</span></span>' +
+            '<span class="brand__text"><span class="brand__name">Studio 27</span></span>' +
           '</a>' +
           '<button class="nav-toggle" aria-expanded="false" aria-controls="site-nav">' +
             '<span></span><span></span><span></span><span class="sr-only">Menu</span>' +
@@ -65,7 +65,7 @@
         '<div class="container footer-grid">' +
           '<div class="footer-brand">' +
             '<a class="brand" href="index.html"><span class="brand__mark">27</span>' +
-            '<span class="brand__text"><span class="brand__name">Studio 27</span><span class="brand__sub">Men&rsquo;s Studio</span></span></a>' +
+            '<span class="brand__text"><span class="brand__name">Studio 27</span></span></a>' +
             '<p class="footer-tagline">' + esc(SITE.tagline) + '</p>' +
             '<p class="age-badge"><span>18+</span> This site is intended for adults aged 18 and over.</p>' +
           '</div>' +
@@ -81,7 +81,7 @@
             '<ul>' +
               '<li><a href="about.html">About Us</a></li>' +
               '<li><a href="ladies.html">Ladies</a></li>' +
-              '<li><a href="roster.html">Roster &amp; Hours</a></li>' +
+              '<li><a href="roster.html">Roster</a></li>' +
               '<li><a href="rates.html">Rates</a></li>' +
               '<li><a href="house-rules.html">House Rules</a></li>' +
               '<li><a href="news.html">News &amp; Updates</a></li>' +
