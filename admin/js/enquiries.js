@@ -2,7 +2,9 @@
   'use strict';
 
   var esc = Admin.esc;
-  var state = { items: [], type: '', status: '', openId: null, photosByItem: {} };
+  var params = new URLSearchParams(location.search);
+  var focusId = params.get('id') ? Number(params.get('id')) : null;
+  var state = { items: [], type: params.get('type') || '', status: '', openId: focusId, photosByItem: {} };
 
   Admin.requireSession(function () {
     Admin.mountShell('enquiries', 'Enquiries & Applications', 'Booking requests and job applications from the public site.');
@@ -53,7 +55,19 @@
       Admin.api('/enquiries' + (qs.length ? '?' + qs.join('&') : ''))
         .then(function (rows) {
           state.items = rows || [];
+          var openItem = state.openId && state.items.filter(function (x) { return x.id === state.openId; })[0];
+          if (openItem && openItem.photo_count > 0 && !state.photosByItem[state.openId]) {
+            Admin.api('/enquiries/' + state.openId + '/photos').then(function (photos) {
+              state.photosByItem[state.openId] = photos;
+              render();
+            });
+            return;
+          }
           render();
+          if (openItem) {
+            var rowBtn = document.querySelector('[data-view="' + state.openId + '"]');
+            if (rowBtn) rowBtn.scrollIntoView({ block: 'center' });
+          }
         })
         .catch(function (err) {
           wrap.innerHTML = '<p class="form-status is-error">' + esc(err.message) + '</p>';
