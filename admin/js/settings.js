@@ -118,18 +118,28 @@
         });
     }
 
+    function formatLastLogin(value) {
+      if (!value) return 'Never signed in';
+      return new Date(value).toLocaleString(undefined, {
+        dateStyle: 'medium',
+        timeStyle: 'short'
+      });
+    }
+
     function adminUsersFields() {
       var rows = adminUsers.map(function (u) {
         var isSelf = u.id === accountId;
         return (
-          '<div class="rate-editor-row" style="grid-template-columns:1fr auto">' +
+          '<div class="rate-editor-row" style="grid-template-columns:1fr auto auto">' +
           '<span>' + esc(u.email) + (isSelf ? ' <span class="hint">(you)</span>' : '') + '</span>' +
+          '<span class="hint">' + esc(formatLastLogin(u.last_login_at)) + '</span>' +
           (isSelf ? '<span></span>' : '<button type="button" data-remove-admin="' + u.id + '">&times;</button>') +
           '</div>'
         );
       }).join('');
 
       return (
+        '<div class="rate-editor-row rate-editor-header" style="grid-template-columns:1fr auto auto"><span>Email</span><span>Last signed in</span><span></span></div>' +
         '<div id="admin-users-list" style="margin-bottom:18px">' + rows + '</div>' +
         '<form id="add-admin-form" class="form">' +
         '<div class="field"><label for="a-email">Email</label><input id="a-email" name="email" type="email" autocomplete="off" required></div>' +

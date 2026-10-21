@@ -73,35 +73,37 @@ const SITE = {
       { heading: 'Open Late', body: '[Open 7 days with late-night hours. Bookings and walk-ins welcome.]' }
     ],
     about: {
-      lead: '[One or two sentences on why Studio 27 exists and what it stands for.]',
+      lead: 'Studio 27 exists for one reason: to give you somewhere to properly switch off.',
       paragraphs: [
-        '[Tell the story of the studio — how it started, the vision behind the space, and what guests love about it.]',
-        '[Talk about the team: professional, friendly, and focused on making every visit relaxed and enjoyable.]'
+        'Beautiful private rooms, genuinely good company, and not a single thing to perform or prove.',
+        'Come for an hour or make an afternoon of it — either way, this one’s entirely yours.'
       ],
       values: [
-        { heading: 'Discretion', body: 'Your privacy is protected at every step, from booking to departure.' },
-        { heading: 'Respect', body: 'Guests and staff are treated with courtesy and respect, always.' },
-        { heading: 'Comfort', body: 'Clean, private rooms with everything you need to relax.' },
-        { heading: 'Safety', body: 'A safe, professional and fully compliant environment for everyone.' }
+        { heading: 'Discretion', body: 'Your business is your business. Full stop.' },
+        { heading: 'Warmth', body: 'Real conversation, real chemistry — never forced.' },
+        { heading: 'Indulgence, done properly', body: 'Beautiful rooms, unhurried time, zero shortcuts.' },
+        { heading: 'Respect', body: 'For every person who walks through our door — client or team.' }
       ]
     },
     faq: [
       {
         title: 'Bookings',
         items: [
-          { question: 'Do I need to book?', answer: 'Bookings are recommended, especially on weekends and evenings. Walk-ins are welcome subject to availability.' },
+          { question: 'Do I need to book, or can I just show up?', answer: 'Either works for us. We’re open 7 days and love a good walk-in, but booking ahead means your favourite is guaranteed to be free.' },
           { question: 'How do I make a booking?', answer: 'Call or text us, or send a request through our contact page. Your booking is confirmed once you hear back from us.' },
           { question: 'Can I request a specific lady?', answer: 'Yes. Check the roster to see who’s working, then mention your preference when you book.' },
-          { question: 'What if I need to cancel or reschedule?', answer: 'Please give us as much notice as possible. See our Cancellation, Refund & Rescheduling Policy.' }
+          { question: 'Can I stay longer than I booked?', answer: 'Absolutely, if the lady requested is available — just ask and we’ll sort the rest.' },
+          { question: 'Plans change — what’s your cancellation policy?', answer: 'Life happens. Full details in our Cancellation, Refund & Rescheduling Policy.' }
         ]
       },
       {
         title: 'Your visit',
         items: [
-          { question: 'Is it discreet?', answer: 'Absolutely. [Describe discreet entry, parking and how payments appear on statements.]' },
+          { question: 'Will anyone know I was here?', answer: 'No. What happens at Studio 27 stays there — your visit, your details, your business.' },
+          { question: 'What do I need to bring?', answer: 'Just valid photo ID (18+) and an open mind. We’ll handle the rest.' },
+          { question: 'Incall vs outcall — what’s the difference?', answer: 'Incall: you come to us and enjoy the full studio experience. Outcall: we bring the experience to you. Rates for both are on our Rates page.' },
           { question: 'How do I pay?', answer: 'Payment is made at reception before your session. [List accepted payment methods.]' },
           { question: 'Is there parking?', answer: '[Parking details.]' },
-          { question: 'Will I be asked for ID?', answer: 'All guests must be 18 or over. We may ask for photo ID if you look under 25.' },
           { question: 'Are showers available?', answer: 'Yes. Every room has shower facilities with fresh towels provided.' }
         ]
       },
