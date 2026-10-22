@@ -378,6 +378,19 @@ ul { padding: 0; list-style: none; }
 
 /* ---------- Models ---------- */
 .model-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 28px; }
+
+/* ---------- Model carousel (home "Meet the Ladies" section) ---------- */
+.model-carousel { overflow: hidden; -webkit-mask-image: linear-gradient(90deg, transparent, #000 4%, #000 96%, transparent); mask-image: linear-gradient(90deg, transparent, #000 4%, #000 96%, transparent); }
+.model-carousel__track { display: flex; gap: 28px; width: max-content; animation: model-carousel-scroll 48s linear infinite; }
+.model-carousel:hover .model-carousel__track { animation-play-state: paused; }
+.model-carousel .model-card { flex: 0 0 260px; }
+@keyframes model-carousel-scroll {
+  from { transform: translateX(0); }
+  to { transform: translateX(-50%); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .model-carousel__track { animation: none; }
+}
 .model-card { background: var(--surface); border: 1px solid var(--line-soft); transition: border-color .3s, transform .3s var(--ease); }
 .model-card:hover { border-color: var(--line); transform: translateY(-4px); }
 .model-card__photo { display: block; position: relative; aspect-ratio: 3 / 4; overflow: hidden; }
