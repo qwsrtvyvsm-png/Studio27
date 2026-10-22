@@ -124,17 +124,21 @@ const SITE = {
 };
 
 /* Models
-   photo:  path to an image in /images, e.g. 'images/models/ruby.jpg'
-           (leave '' to show the "photo coming soon" placeholder)
-   age:    must be 18 or over
-   days:   any of 'Mon','Tue','Wed','Thu','Fri','Sat','Sun'
-   time:   shift shown on the roster for those days
-   isNew:  true shows a "New" tag                                   */
+   photo:     path to an image in /images, e.g. 'images/models/ruby.jpg'
+              (leave '' to show the "photo coming soon" placeholder)
+   age:       must be 18 or over
+   ethnicity: shown on their profile page
+   size:      shown on their profile page, e.g. '8 (AU)'
+   intro:     short blurb shown on cards
+   about:     longer bio shown on their profile page
+   days:      any of 'Mon','Tue','Wed','Thu','Fri','Sat','Sun'
+   time:      shift shown on the roster for those days
+   isNew:     true shows a "New" tag                                   */
 const MODELS = [
-  { name: '[Model 1]', photo: '', age: 18, intro: '[A short, tasteful introduction.]', days: ['Mon', 'Wed', 'Fri'], time: '10am – 6pm', isNew: true },
-  { name: '[Model 2]', photo: '', age: 18, intro: '[A short, tasteful introduction.]', days: ['Tue', 'Thu', 'Sat'], time: '6pm – late', isNew: false },
-  { name: '[Model 3]', photo: '', age: 18, intro: '[A short, tasteful introduction.]', days: ['Mon', 'Tue', 'Sun'], time: '12pm – 8pm', isNew: false },
-  { name: '[Model 4]', photo: '', age: 18, intro: '[A short, tasteful introduction.]', days: ['Wed', 'Fri', 'Sat'], time: '8pm – late', isNew: true },
-  { name: '[Model 5]', photo: '', age: 18, intro: '[A short, tasteful introduction.]', days: ['Thu', 'Sat', 'Sun'], time: '10am – 6pm', isNew: false },
-  { name: '[Model 6]', photo: '', age: 18, intro: '[A short, tasteful introduction.]', days: ['Mon', 'Fri', 'Sun'], time: '6pm – late', isNew: false }
+  { id: 1, name: '[Model 1]', photo: '', photos: [], age: 18, ethnicity: '[Ethnicity]', size: '[Size]', intro: '[A short, tasteful introduction.]', about: '[A longer bio for their profile page.]', days: ['Mon', 'Wed', 'Fri'], time: '10am – 6pm', isNew: true },
+  { id: 2, name: '[Model 2]', photo: '', photos: [], age: 18, ethnicity: '[Ethnicity]', size: '[Size]', intro: '[A short, tasteful introduction.]', about: '[A longer bio for their profile page.]', days: ['Tue', 'Thu', 'Sat'], time: '6pm – late', isNew: false },
+  { id: 3, name: '[Model 3]', photo: '', photos: [], age: 18, ethnicity: '[Ethnicity]', size: '[Size]', intro: '[A short, tasteful introduction.]', about: '[A longer bio for their profile page.]', days: ['Mon', 'Tue', 'Sun'], time: '12pm – 8pm', isNew: false },
+  { id: 4, name: '[Model 4]', photo: '', photos: [], age: 18, ethnicity: '[Ethnicity]', size: '[Size]', intro: '[A short, tasteful introduction.]', about: '[A longer bio for their profile page.]', days: ['Wed', 'Fri', 'Sat'], time: '8pm – late', isNew: true },
+  { id: 5, name: '[Model 5]', photo: '', photos: [], age: 18, ethnicity: '[Ethnicity]', size: '[Size]', intro: '[A short, tasteful introduction.]', about: '[A longer bio for their profile page.]', days: ['Thu', 'Sat', 'Sun'], time: '10am – 6pm', isNew: false },
+  { id: 6, name: '[Model 6]', photo: '', photos: [], age: 18, ethnicity: '[Ethnicity]', size: '[Size]', intro: '[A short, tasteful introduction.]', about: '[A longer bio for their profile page.]', days: ['Mon', 'Fri', 'Sun'], time: '6pm – late', isNew: false }
 ];

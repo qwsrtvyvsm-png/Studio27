@@ -261,20 +261,88 @@
       ? '<img src="' + esc(m.photo) + '" alt="' + esc(m.name) + '" loading="lazy">'
       : '<div class="model-card__placeholder" aria-hidden="true"><span>27</span><small>Photo coming soon</small></div>';
     var onToday = m.days.indexOf(TODAY) !== -1;
+    var profileHref = 'lady.html?id=' + encodeURIComponent(m.id != null ? m.id : '');
     return '' +
       '<article class="model-card">' +
-        '<div class="model-card__photo">' + photo +
+        '<a class="model-card__photo" href="' + profileHref + '">' + photo +
           (m.isNew ? '<span class="tag">New</span>' : '') +
           (onToday ? '<span class="tag tag--gold">On today</span>' : '') +
-        '</div>' +
+        '</a>' +
         '<div class="model-card__body">' +
-          '<h3>' + esc(m.name) + '</h3>' +
+          '<h3><a href="' + profileHref + '">' + esc(m.name) + '</a></h3>' +
           (m.age ? '<p class="model-card__age">Age ' + esc(m.age) + '</p>' : '') +
           '<p>' + esc(m.intro) + '</p>' +
           '<p class="model-card__days"><span>Available</span> ' + (m.days.length ? m.days.join(' &middot; ') : 'By request') + '</p>' +
-          '<a class="link-arrow" href="contact.html?model=' + encodeURIComponent(m.name) + '">Enquire</a>' +
+          '<a class="link-arrow" href="' + profileHref + '">View profile</a>' +
         '</div>' +
       '</article>';
+  }
+
+  function renderLadyProfile(el) {
+    var id = new URLSearchParams(location.search).get('id');
+    if (!id) {
+      el.innerHTML = notFoundHTML();
+      return;
+    }
+    fetch('/api/public/models/' + encodeURIComponent(id))
+      .then(function (res) { return res.ok ? res.json() : null; })
+      .catch(function () { return null; })
+      .then(function (m) {
+        el.innerHTML = m ? ladyProfileHTML(m) : notFoundHTML();
+        if (m) document.title = m.name + ' | Studio 27';
+      });
+  }
+
+  function notFoundHTML() {
+    return '' +
+      '<section class="page-hero"><div class="container">' +
+        '<p class="eyebrow">Studio 27</p>' +
+        '<h1 class="display">Profile not <em>found</em></h1>' +
+        '<p class="lead">This lady may no longer be with us, or the link is out of date.</p>' +
+        '<div class="btn-row" style="justify-content:center;margin-top:18px">' +
+          '<a class="btn btn--gold" href="ladies.html">All Ladies</a>' +
+        '</div>' +
+      '</div></section>';
+  }
+
+  function ladyProfileHTML(m) {
+    var meta = [
+      m.age ? { label: 'Age', value: m.age } : null,
+      m.ethnicity ? { label: 'Ethnicity', value: m.ethnicity } : null,
+      m.size ? { label: 'Size', value: m.size } : null
+    ].filter(Boolean);
+
+    var gallery = (m.photos || []).length
+      ? '<div class="lady-gallery">' + m.photos.map(function (src) {
+          return '<img src="' + esc(src) + '" alt="' + esc(m.name) + '" loading="lazy">';
+        }).join('') + '</div>'
+      : '<div class="model-card__placeholder lady-gallery__empty" aria-hidden="true"><span>27</span><small>Gallery coming soon</small></div>';
+
+    return '' +
+      '<section class="page-hero"><div class="container">' +
+        '<p class="eyebrow">Meet</p>' +
+        '<h1 class="display">' + esc(m.name) + '</h1>' +
+        (m.intro ? '<p class="lead">' + esc(m.intro) + '</p>' : '') +
+      '</div></section>' +
+      '<section class="section"><div class="container split split--reverse">' +
+        '<div>' +
+          (meta.length
+            ? '<dl class="info-list">' + meta.map(function (f) {
+                return '<div><dt>' + esc(f.label) + '</dt><dd>' + esc(f.value) + '</dd></div>';
+              }).join('') + '</dl>'
+            : '') +
+          '<h2 class="h3">About</h2>' +
+          '<p>' + esc(m.about || m.intro || 'Details coming soon.') + '</p>' +
+          '<p class="model-card__days" style="margin:22px 0 28px"><span>Available</span> ' +
+            ((m.days || []).length ? m.days.join(' &middot; ') + (m.time ? ' &middot; ' + esc(m.time) : '') : 'By request') +
+          '</p>' +
+          '<div class="btn-row">' +
+            '<a class="btn btn--gold" href="contact.html?model=' + encodeURIComponent(m.name) + '">Enquire</a>' +
+            '<a class="btn btn--ghost" href="ladies.html">All Ladies</a>' +
+          '</div>' +
+        '</div>' +
+        gallery +
+      '</div></section>';
   }
 
   function renderModels(el) {
@@ -287,7 +355,7 @@
       return '<th scope="col"' + (d === TODAY ? ' class="is-today"' : '') + '>' + d + '</th>';
     }).join('') + '</tr>';
     var rows = MODELS.map(function (m) {
-      return '<tr><th scope="row">' + esc(m.name) + '</th>' + DAYS.map(function (d) {
+      return '<tr><th scope="row"><a href="lady.html?id=' + encodeURIComponent(m.id != null ? m.id : '') + '">' + esc(m.name) + '</a></th>' + DAYS.map(function (d) {
         var on = m.days.indexOf(d) !== -1;
         return '<td class="' + (d === TODAY ? 'is-today ' : '') + (on ? 'is-on' : 'is-off') + '">' + (on ? esc(m.time) : '&mdash;') + '</td>';
       }).join('') + '</tr>';
@@ -447,6 +515,9 @@
     renderContent();
     loadLiveContent();
     wireForms();
+
+    var ladyProfileEl = document.querySelector('[data-lady-profile]');
+    if (ladyProfileEl) renderLadyProfile(ladyProfileEl);
 
     // Legal pages are readable without passing the gate
     if ('noGate' in body.dataset) {

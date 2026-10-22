@@ -17,7 +17,10 @@ CREATE TABLE IF NOT EXISTS models (
   division_id INTEGER REFERENCES divisions(id) ON DELETE SET NULL,
   status TEXT NOT NULL DEFAULT 'active' CHECK (status IN ('active', 'inactive')),
   age INTEGER,
+  ethnicity TEXT NOT NULL DEFAULT '',
+  size TEXT NOT NULL DEFAULT '',
   intro TEXT NOT NULL DEFAULT '',
+  about TEXT NOT NULL DEFAULT '',
   days TEXT[] NOT NULL DEFAULT '{}',
   time TEXT NOT NULL DEFAULT '',
   is_new BOOLEAN NOT NULL DEFAULT false,
@@ -67,6 +70,9 @@ CREATE TABLE IF NOT EXISTS admin_users (
 );
 
 ALTER TABLE admin_users ADD COLUMN IF NOT EXISTS last_login_at TIMESTAMPTZ;
+ALTER TABLE models ADD COLUMN IF NOT EXISTS ethnicity TEXT NOT NULL DEFAULT '';
+ALTER TABLE models ADD COLUMN IF NOT EXISTS size TEXT NOT NULL DEFAULT '';
+ALTER TABLE models ADD COLUMN IF NOT EXISTS about TEXT NOT NULL DEFAULT '';
 `;
 
 async function initSchema() {

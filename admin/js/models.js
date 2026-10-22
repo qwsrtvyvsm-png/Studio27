@@ -16,9 +16,12 @@
       '<div class="field"><label for="m-division">Division</label><select id="m-division" name="division_id"><option value="">None</option></select></div>' +
       '<div class="field"><label for="m-age">Age</label><input id="m-age" name="age" type="number" min="18"></div>' +
       '<div class="field"><label for="m-status">Status</label><select id="m-status" name="status"><option value="active">Active</option><option value="inactive">Inactive</option></select></div>' +
+      '<div class="field"><label for="m-ethnicity">Ethnicity</label><input id="m-ethnicity" name="ethnicity"></div>' +
+      '<div class="field"><label for="m-size">Size</label><input id="m-size" name="size" placeholder="e.g. 8 (AU)"></div>' +
       '<div class="field"><label for="m-time">Shift time</label><input id="m-time" name="time" placeholder="e.g. 10am – 6pm"></div>' +
       '<div class="field"><label class="check" style="margin-top:14px"><input id="m-isnew" name="isNew" type="checkbox"> Show &ldquo;New&rdquo; tag</label></div>' +
-      '<div class="field full"><label for="m-intro">Intro</label><textarea id="m-intro" name="intro"></textarea></div>' +
+      '<div class="field full"><label for="m-intro">Intro (shown on cards)</label><textarea id="m-intro" name="intro"></textarea></div>' +
+      '<div class="field full"><label for="m-about">About (shown on their profile page)</label><textarea id="m-about" name="about"></textarea></div>' +
       '<div class="field full"><fieldset><legend>Available days</legend><div class="options" id="m-days"></div></fieldset></div>' +
       '<div class="field full">' +
       '<button type="submit" class="btn btn--pink">Save</button> ' +
@@ -165,9 +168,12 @@
       form.division_id.value = m.division_id || '';
       form.age.value = m.age || '';
       form.status.value = m.status || 'active';
+      form.ethnicity.value = m.ethnicity || '';
+      form.size.value = m.size || '';
       form.time.value = m.time || '';
       form.isNew.checked = !!m.isNew;
       form.intro.value = m.intro || '';
+      form.about.value = m.about || '';
       form.querySelectorAll('input[name="days"]').forEach(function (cb) {
         cb.checked = (m.days || []).indexOf(cb.value) !== -1;
       });
@@ -194,9 +200,12 @@
         division_id: form.division_id.value || null,
         age: form.age.value || null,
         status: form.status.value,
+        ethnicity: form.ethnicity.value.trim(),
+        size: form.size.value.trim(),
         time: form.time.value.trim(),
         isNew: form.isNew.checked,
         intro: form.intro.value.trim(),
+        about: form.about.value.trim(),
         days: days
       };
       var req = state.editingId
