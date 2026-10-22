@@ -1,7 +1,8 @@
 const express = require('express');
 const multer = require('multer');
 const { pool } = require('../db');
-const requireAuth = require('../middleware/requireAuth');
+const { requirePermission } = require('../middleware/permissions');
+const enquiriesAccess = requirePermission('enquiries');
 
 const router = express.Router();
 
@@ -32,7 +33,7 @@ router.post('/', parseFields, async (req, res) => {
   res.json({ ok: true });
 });
 
-router.get('/', requireAuth, async (req, res) => {
+router.get('/', enquiriesAccess, async (req, res) => {
   const clauses = [];
   const params = [];
   if (req.query.type) {
@@ -56,7 +57,7 @@ router.get('/', requireAuth, async (req, res) => {
   res.json(rows);
 });
 
-router.get('/:id/photos', requireAuth, async (req, res) => {
+router.get('/:id/photos', enquiriesAccess, async (req, res) => {
   const { rows } = await pool.query(
     'SELECT id FROM enquiry_photos WHERE enquiry_id = $1 ORDER BY id ASC',
     [req.params.id]
@@ -64,7 +65,7 @@ router.get('/:id/photos', requireAuth, async (req, res) => {
   res.json(rows);
 });
 
-router.get('/:id/photos/:photoId', requireAuth, async (req, res) => {
+router.get('/:id/photos/:photoId', enquiriesAccess, async (req, res) => {
   const { rows } = await pool.query(
     'SELECT image_bytes, content_type FROM enquiry_photos WHERE id = $1 AND enquiry_id = $2',
     [req.params.photoId, req.params.id]
@@ -74,7 +75,7 @@ router.get('/:id/photos/:photoId', requireAuth, async (req, res) => {
   res.send(rows[0].image_bytes);
 });
 
-router.patch('/:id', requireAuth, async (req, res) => {
+router.patch('/:id', enquiriesAccess, async (req, res) => {
   const { status } = req.body;
   if (!['new', 'contacted', 'closed'].includes(status)) {
     return res.status(400).json({ error: 'Invalid status.' });
@@ -83,7 +84,7 @@ router.patch('/:id', requireAuth, async (req, res) => {
   res.json({ ok: true });
 });
 
-router.delete('/:id', requireAuth, async (req, res) => {
+router.delete('/:id', enquiriesAccess, async (req, res) => {
   await pool.query('DELETE FROM enquiries WHERE id = $1', [req.params.id]);
   res.json({ ok: true });
 });

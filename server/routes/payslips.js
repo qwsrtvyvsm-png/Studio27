@@ -1,9 +1,9 @@
 const express = require('express');
 const { pool } = require('../db');
-const requireAuth = require('../middleware/requireAuth');
+const { requirePermission } = require('../middleware/permissions');
 
 const router = express.Router();
-router.use(requireAuth);
+router.use(requirePermission('payslips'));
 
 function cleanEntries(entries) {
   return (Array.isArray(entries) ? entries : [])

@@ -120,9 +120,7 @@
           '<p class="footer-ad"><strong>This website is an advertisement only.</strong> It is intended for adults aged 18 years and over. All persons depicted are 18 years of age or older.</p>' +
           '<dl class="compliance-list">' +
             '<div><dt>Registered business name</dt><dd>' + esc(SITE.legalName) + '</dd></div>' +
-            '<div><dt>Registration no.</dt><dd>' + esc(SITE.registrationNo) + '</dd></div>' +
             '<div><dt>ABN</dt><dd>' + esc(SITE.abn) + '</dd></div>' +
-            '<div><dt>Licence / permit no.</dt><dd>' + esc(SITE.licence) + '</dd></div>' +
           '</dl>' +
           '<p class="copyright">&copy; ' + new Date().getFullYear() + ' ' + esc(SITE.legalName) + ' trading as Studio 27. All rights reserved. ' +
           'The Studio 27 name, logo, images and content are protected by copyright and may not be reproduced without written permission.</p>' +
@@ -452,6 +450,23 @@
   }
 
   /* ---------- Render everything that depends on SITE/MODELS ---------- */
+  function renderLiveUpdate() {
+    var update = SITE.liveUpdate || {};
+    var el = document.querySelector('.live-update');
+    if (!update.enabled || !update.message) {
+      if (el) el.remove();
+      return;
+    }
+    if (!el) {
+      el = document.createElement('div');
+      el.className = 'live-update';
+      var header = document.querySelector('.site-header');
+      if (header) header.before(el);
+      else document.body.insertBefore(el, document.body.firstChild);
+    }
+    el.innerHTML = '<div class="container"><span class="live-update__dot"></span>' + esc(update.message) + '</div>';
+  }
+
   function renderFooter() {
     // Reuse the same node across re-renders (rather than replacing it) so
     // that if the age gate already applied `inert` to it, that stays intact.
@@ -465,6 +480,7 @@
   }
 
   function renderContent() {
+    renderLiveUpdate();
     renderFooter();
     fillSiteFields();
     document.querySelectorAll('[data-hours]').forEach(renderHours);

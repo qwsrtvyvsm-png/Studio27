@@ -8,6 +8,7 @@
   Admin.requireSession(function () {
     Admin.mountShell('staff', 'Staff Roster', 'Add staff and fill in their weekly shifts.');
     var content = document.getElementById('admin-content');
+    if (!Admin.hasAccess('staff')) { content.innerHTML = Admin.accessDeniedHTML(); return; }
     content.innerHTML =
       '<div class="admin-panel">' +
       '<h2 id="editor-title">Add a staff member</h2>' +

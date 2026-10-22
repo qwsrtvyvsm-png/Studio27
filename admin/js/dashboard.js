@@ -81,11 +81,13 @@
     var content = document.getElementById('admin-content');
     content.innerHTML = '<p class="muted">Loading&hellip;</p>';
 
+    // Each call is caught individually so a section this admin has no
+    // permission for just shows empty, instead of breaking the whole page.
     Promise.all([
-      Admin.api('/enquiries?type=booking'),
-      Admin.api('/enquiries?type=application'),
-      Admin.api('/models'),
-      Admin.api('/settings')
+      Admin.api('/enquiries?type=booking').catch(function () { return []; }),
+      Admin.api('/enquiries?type=application').catch(function () { return []; }),
+      Admin.api('/models').catch(function () { return []; }),
+      Admin.api('/settings').catch(function () { return {}; })
     ])
       .then(function (results) {
         var bookings = results[0] || [];

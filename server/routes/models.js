@@ -1,7 +1,7 @@
 const express = require('express');
 const multer = require('multer');
 const { pool } = require('../db');
-const requireAuth = require('../middleware/requireAuth');
+const { requirePermission } = require('../middleware/permissions');
 
 const router = express.Router();
 const upload = multer({
@@ -12,7 +12,7 @@ const upload = multer({
   }
 });
 
-router.use(requireAuth);
+router.use(requirePermission('models'));
 
 router.get('/', async (req, res) => {
   const { rows } = await pool.query(

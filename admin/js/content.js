@@ -9,6 +9,7 @@
   Admin.requireSession(function () {
     Admin.mountShell('content', 'Site Content', 'Edit the hero, about, experience and FAQ text shown on the public site.');
     var content = document.getElementById('admin-content');
+    if (!Admin.hasAccess('settings')) { content.innerHTML = Admin.accessDeniedHTML(); return; }
     content.innerHTML = '<p class="muted">Loading&hellip;</p>';
 
     Admin.api('/settings')

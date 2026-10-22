@@ -8,6 +8,7 @@
   Admin.requireSession(function () {
     Admin.mountShell('models', 'Models & Roster', 'Add and edit profiles, photos and the roster order.');
     var content = document.getElementById('admin-content');
+    if (!Admin.hasAccess('models')) { content.innerHTML = Admin.accessDeniedHTML(); return; }
     content.innerHTML =
       '<div class="admin-panel">' +
       '<h2 id="editor-title">Add a model</h2>' +

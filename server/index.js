@@ -15,6 +15,7 @@ const divisionsRoutes = require('./routes/divisions');
 const settingsRoutes = require('./routes/settings');
 const staffRoutes = require('./routes/staff');
 const payslipsRoutes = require('./routes/payslips');
+const { activityLog } = require('./middleware/activityLog');
 
 const ROOT = path.join(__dirname, '..');
 const app = express();
@@ -37,6 +38,8 @@ app.use(
     }
   })
 );
+
+app.use('/api', activityLog);
 
 app.use('/api/auth', authRoutes);
 app.use('/api/public', publicRoutes);

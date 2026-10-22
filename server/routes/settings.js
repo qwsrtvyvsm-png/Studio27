@@ -1,9 +1,9 @@
 const express = require('express');
 const { pool } = require('../db');
-const requireAuth = require('../middleware/requireAuth');
+const { requirePermission } = require('../middleware/permissions');
 
 const router = express.Router();
-router.use(requireAuth);
+router.use(requirePermission('settings'));
 
 router.get('/', async (req, res) => {
   const { rows } = await pool.query('SELECT data FROM site_settings WHERE id = 1');

@@ -3,6 +3,8 @@ const bcrypt = require('bcryptjs');
 const rateLimit = require('express-rate-limit');
 const { pool } = require('../db');
 const requireAuth = require('../middleware/requireAuth');
+const { requireOwner, OWNER_EMAIL, PERMISSION_KEYS } = require('../middleware/permissions');
+const { record } = require('../middleware/activityLog');
 
 const router = express.Router();
 
@@ -59,6 +61,7 @@ router.post('/login', authLimiter, async (req, res) => {
 
   await pool.query('UPDATE admin_users SET last_login_at = now() WHERE id = $1', [user.id]);
   req.session.userId = user.id;
+  record(user.id, 'Logged in', 'POST', 'auth/login');
   res.json({ ok: true });
 });
 
@@ -70,8 +73,18 @@ router.get('/me', async (req, res) => {
   if (!(req.session && req.session.userId)) {
     return res.json({ authenticated: false });
   }
-  const { rows } = await pool.query('SELECT id, email FROM admin_users WHERE id = $1', [req.session.userId]);
-  res.json({ authenticated: true, id: rows[0] ? rows[0].id : null, email: rows[0] ? rows[0].email : null });
+  const { rows } = await pool.query(
+    'SELECT id, email, permissions FROM admin_users WHERE id = $1',
+    [req.session.userId]
+  );
+  const user = rows[0];
+  res.json({
+    authenticated: true,
+    id: user ? user.id : null,
+    email: user ? user.email : null,
+    permissions: user ? user.permissions || [] : [],
+    isOwner: user ? user.email === OWNER_EMAIL : false
+  });
 });
 
 router.put('/password', requireAuth, authLimiter, async (req, res) => {
@@ -81,7 +94,7 @@ router.put('/password', requireAuth, authLimiter, async (req, res) => {
     return res.status(400).json({ error: 'New password must be at least 8 characters.' });
   }
 
-  const { rows } = await pool.query('SELECT password_hash FROM admin_users WHERE id = $1', [req.session.userId]);
+  const { rows } = await pool.query('SELECT email, password_hash FROM admin_users WHERE id = $1', [req.session.userId]);
   const user = rows[0];
   const ok = user && (await bcrypt.compare(currentPassword, user.password_hash));
   if (!ok) {
@@ -89,8 +102,21 @@ router.put('/password', requireAuth, authLimiter, async (req, res) => {
   }
 
   const hash = await bcrypt.hash(newPassword, 12);
-  await pool.query('UPDATE admin_users SET password_hash = $1 WHERE id = $2', [hash, req.session.userId]);
-  res.json({ ok: true });
+
+  // The owner changes their own password immediately. Anyone else's change
+  // is held as a request until the owner approves it.
+  if (user.email === OWNER_EMAIL) {
+    await pool.query('UPDATE admin_users SET password_hash = $1 WHERE id = $2', [hash, req.session.userId]);
+    record(req.session.userId, 'Changed their password', 'PUT', 'auth/password');
+    return res.json({ ok: true });
+  }
+
+  record(req.session.userId, 'Requested a password change', 'PUT', 'auth/password');
+  await pool.query(
+    'INSERT INTO admin_password_requests (admin_user_id, new_password_hash) VALUES ($1, $2)',
+    [req.session.userId, hash]
+  );
+  res.json({ ok: true, pending: true });
 });
 
 router.put('/email', requireAuth, authLimiter, async (req, res) => {
@@ -118,12 +144,14 @@ router.put('/email', requireAuth, authLimiter, async (req, res) => {
   res.json({ ok: true, email: newEmail });
 });
 
-router.get('/admin-users', requireAuth, async (req, res) => {
-  const { rows } = await pool.query('SELECT id, email, created_at, last_login_at FROM admin_users ORDER BY created_at ASC');
-  res.json(rows);
+router.get('/admin-users', requireOwner, async (req, res) => {
+  const { rows } = await pool.query(
+    'SELECT id, email, created_at, last_login_at, permissions FROM admin_users ORDER BY created_at ASC'
+  );
+  res.json(rows.map((u) => ({ ...u, isOwner: u.email === OWNER_EMAIL })));
 });
 
-router.post('/admin-users', requireAuth, authLimiter, async (req, res) => {
+router.post('/admin-users', requireOwner, authLimiter, async (req, res) => {
   const email = (req.body.email || '').trim().toLowerCase();
   const password = req.body.password || '';
   if (!email || !email.includes('@') || !password || password.length < 8) {
@@ -133,7 +161,7 @@ router.post('/admin-users', requireAuth, authLimiter, async (req, res) => {
   const hash = await bcrypt.hash(password, 12);
   try {
     const inserted = await pool.query(
-      'INSERT INTO admin_users (email, password_hash) VALUES ($1, $2) RETURNING id, email, created_at, last_login_at',
+      'INSERT INTO admin_users (email, password_hash) VALUES ($1, $2) RETURNING id, email, created_at, last_login_at, permissions',
       [email, hash]
     );
     res.status(201).json(inserted.rows[0]);
@@ -145,7 +173,20 @@ router.post('/admin-users', requireAuth, authLimiter, async (req, res) => {
   }
 });
 
-router.delete('/admin-users/:id', requireAuth, authLimiter, async (req, res) => {
+router.put('/admin-users/:id/permissions', requireOwner, async (req, res) => {
+  const { rows } = await pool.query('SELECT email FROM admin_users WHERE id = $1', [req.params.id]);
+  if (!rows[0]) return res.status(404).json({ error: 'Not found' });
+  if (rows[0].email === OWNER_EMAIL) {
+    return res.status(400).json({ error: 'The owner always has full access.' });
+  }
+  const permissions = (Array.isArray(req.body.permissions) ? req.body.permissions : []).filter((p) =>
+    PERMISSION_KEYS.includes(p)
+  );
+  await pool.query('UPDATE admin_users SET permissions = $1 WHERE id = $2', [permissions, req.params.id]);
+  res.json({ ok: true, permissions });
+});
+
+router.delete('/admin-users/:id', requireOwner, authLimiter, async (req, res) => {
   const id = Number(req.params.id);
   if (id === req.session.userId) {
     return res.status(400).json({ error: 'You cannot remove your own account.' });
@@ -158,6 +199,56 @@ router.delete('/admin-users/:id', requireAuth, authLimiter, async (req, res) => 
 
   await pool.query('DELETE FROM admin_users WHERE id = $1', [id]);
   res.json({ ok: true });
+});
+
+router.get('/password-requests', requireOwner, async (req, res) => {
+  const { rows } = await pool.query(
+    `SELECT r.id, r.created_at AS "createdAt", u.email
+     FROM admin_password_requests r JOIN admin_users u ON u.id = r.admin_user_id
+     WHERE r.status = 'pending' ORDER BY r.created_at ASC`
+  );
+  res.json(rows);
+});
+
+router.post('/password-requests/:id/approve', requireOwner, async (req, res) => {
+  const { rows } = await pool.query(
+    `SELECT admin_user_id, new_password_hash FROM admin_password_requests WHERE id = $1 AND status = 'pending'`,
+    [req.params.id]
+  );
+  if (!rows[0]) return res.status(404).json({ error: 'Not found' });
+
+  await pool.query('UPDATE admin_users SET password_hash = $1 WHERE id = $2', [
+    rows[0].new_password_hash,
+    rows[0].admin_user_id
+  ]);
+  await pool.query(
+    `UPDATE admin_password_requests SET status = 'approved', resolved_at = now() WHERE id = $1`,
+    [req.params.id]
+  );
+  record(req.session.userId, 'Approved a password change request', 'POST', 'auth/password-requests/' + req.params.id + '/approve');
+  res.json({ ok: true });
+});
+
+router.post('/password-requests/:id/deny', requireOwner, async (req, res) => {
+  const { rows } = await pool.query(`SELECT id FROM admin_password_requests WHERE id = $1 AND status = 'pending'`, [
+    req.params.id
+  ]);
+  if (!rows[0]) return res.status(404).json({ error: 'Not found' });
+
+  await pool.query(`UPDATE admin_password_requests SET status = 'denied', resolved_at = now() WHERE id = $1`, [
+    req.params.id
+  ]);
+  record(req.session.userId, 'Denied a password change request', 'POST', 'auth/password-requests/' + req.params.id + '/deny');
+  res.json({ ok: true });
+});
+
+router.get('/activity', requireOwner, async (req, res) => {
+  const { rows } = await pool.query(
+    `SELECT l.id, l.action, l.created_at AS "createdAt", u.email AS "adminEmail"
+     FROM admin_activity_log l LEFT JOIN admin_users u ON u.id = l.admin_user_id
+     ORDER BY l.created_at DESC LIMIT 300`
+  );
+  res.json(rows);
 });
 
 module.exports = router;

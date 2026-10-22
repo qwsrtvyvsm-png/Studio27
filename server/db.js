@@ -66,7 +66,17 @@ CREATE TABLE IF NOT EXISTS admin_users (
   email TEXT NOT NULL UNIQUE,
   password_hash TEXT NOT NULL,
   created_at TIMESTAMPTZ NOT NULL DEFAULT now(),
-  last_login_at TIMESTAMPTZ
+  last_login_at TIMESTAMPTZ,
+  permissions TEXT[] NOT NULL DEFAULT '{}'
+);
+
+CREATE TABLE IF NOT EXISTS admin_activity_log (
+  id SERIAL PRIMARY KEY,
+  admin_user_id INTEGER REFERENCES admin_users(id) ON DELETE SET NULL,
+  action TEXT NOT NULL,
+  method TEXT NOT NULL,
+  path TEXT NOT NULL,
+  created_at TIMESTAMPTZ NOT NULL DEFAULT now()
 );
 
 CREATE TABLE IF NOT EXISTS staff (
@@ -97,7 +107,17 @@ CREATE TABLE IF NOT EXISTS payslip_entries (
   sort_order INTEGER NOT NULL DEFAULT 0
 );
 
+CREATE TABLE IF NOT EXISTS admin_password_requests (
+  id SERIAL PRIMARY KEY,
+  admin_user_id INTEGER NOT NULL REFERENCES admin_users(id) ON DELETE CASCADE,
+  new_password_hash TEXT NOT NULL,
+  status TEXT NOT NULL DEFAULT 'pending' CHECK (status IN ('pending', 'approved', 'denied')),
+  created_at TIMESTAMPTZ NOT NULL DEFAULT now(),
+  resolved_at TIMESTAMPTZ
+);
+
 ALTER TABLE admin_users ADD COLUMN IF NOT EXISTS last_login_at TIMESTAMPTZ;
+ALTER TABLE admin_users ADD COLUMN IF NOT EXISTS permissions TEXT[] NOT NULL DEFAULT '{}';
 ALTER TABLE models ADD COLUMN IF NOT EXISTS ethnicity TEXT NOT NULL DEFAULT '';
 ALTER TABLE models ADD COLUMN IF NOT EXISTS size TEXT NOT NULL DEFAULT '';
 ALTER TABLE models ADD COLUMN IF NOT EXISTS about TEXT NOT NULL DEFAULT '';

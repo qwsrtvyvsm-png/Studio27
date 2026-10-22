@@ -10,9 +10,17 @@
     { href: 'staff.html', label: 'Staff Roster', id: 'staff' },
     { href: 'payslips.html', label: 'Payslips', id: 'payslips' },
     { href: 'enquiries.html', label: 'Enquiries & Applications', id: 'enquiries' },
-    { href: 'settings.html', label: 'Site Settings', id: 'settings' },
-    { href: 'content.html', label: 'Site Content', id: 'content' }
+    { href: 'settings.html', label: 'Site Settings', id: 'settings', alwaysVisible: true },
+    { href: 'content.html', label: 'Site Content', id: 'content', permKey: 'settings' },
+    { href: 'activity.html', label: 'Activity', id: 'activity', ownerOnly: true }
   ];
+
+  function hasAccess(key) {
+    var u = window.AdminUser;
+    if (!u) return false;
+    if (u.isOwner) return true;
+    return (u.permissions || []).indexOf(key) !== -1;
+  }
 
   function esc(s) {
     return String(s === null || s === undefined ? '' : s).replace(/[&<>"']/g, function (c) {
@@ -44,7 +52,12 @@
   }
 
   function sidebarHTML(page) {
-    var links = NAV.map(function (n) {
+    var u = window.AdminUser;
+    var links = NAV.filter(function (n) {
+      if (n.id === 'dashboard' || n.alwaysVisible) return true; // Settings always shows — it's also where Account self-service lives
+      if (n.ownerOnly) return !!(u && u.isOwner);
+      return hasAccess(n.permKey || n.id);
+    }).map(function (n) {
       return '<li><a href="' + n.href + '" data-nav="' + n.id + '"' + (n.id === page ? ' aria-current="page"' : '') + '>' +
         '<span class="admin-nav__label">' + n.label + '</span></a></li>';
     }).join('');
@@ -101,12 +114,25 @@
           location.href = 'login.html';
           return;
         }
-        onReady();
+        window.AdminUser = data;
+        onReady(data);
       })
       .catch(function () {
         location.href = 'login.html';
       });
   }
 
-  window.Admin = { api: api, esc: esc, mountShell: mountShell, requireSession: requireSession, setNavBadge: setNavBadge };
+  function accessDeniedHTML() {
+    return '<div class="admin-panel"><p class="form-status is-error">You don&rsquo;t have access to this section. Ask the owner to grant it in Site Settings.</p></div>';
+  }
+
+  window.Admin = {
+    api: api,
+    esc: esc,
+    mountShell: mountShell,
+    requireSession: requireSession,
+    setNavBadge: setNavBadge,
+    hasAccess: hasAccess,
+    accessDeniedHTML: accessDeniedHTML
+  };
 })();

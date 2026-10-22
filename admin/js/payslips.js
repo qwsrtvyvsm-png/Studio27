@@ -12,6 +12,7 @@
   Admin.requireSession(function () {
     Admin.mountShell('payslips', 'Payslips', 'Fill in a payslip for a lady, just like the paper sheet.');
     var content = document.getElementById('admin-content');
+    if (!Admin.hasAccess('payslips')) { content.innerHTML = Admin.accessDeniedHTML(); return; }
     content.innerHTML =
       '<div class="admin-panel">' +
       '<div class="field" style="max-width:360px"><label for="p-model">Lady</label><select id="p-model"><option value="">Choose a lady&hellip;</option></select></div>' +

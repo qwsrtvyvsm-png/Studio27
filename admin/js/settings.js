@@ -3,24 +3,44 @@
 
   var esc = Admin.esc;
   var DAYS = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
+  var PERMS = [
+    { key: 'models', label: 'Models & Roster' },
+    { key: 'staff', label: 'Staff Roster' },
+    { key: 'payslips', label: 'Payslips' },
+    { key: 'enquiries', label: 'Enquiries & Applications' },
+    { key: 'settings', label: 'Site Settings & Content' }
+  ];
+
   var data = {};
   var accountEmail = '';
   var accountId = null;
+  var isOwner = false;
+  var canEditSettings = false;
   var adminUsers = [];
+  var passwordRequests = [];
 
-  Admin.requireSession(function () {
-    Admin.mountShell('settings', 'Site Settings', 'Edit hours, rates and the contact/compliance details shown on the public site.');
+  Admin.requireSession(function (me) {
+    Admin.mountShell('settings', 'Site Settings', 'Edit hours, rates and the contact details shown on the public site.');
     var content = document.getElementById('admin-content');
     content.innerHTML = '<p class="muted">Loading&hellip;</p>';
 
-    Promise.all([Admin.api('/settings'), Admin.api('/auth/me'), Admin.api('/auth/admin-users')])
+    accountEmail = me.email || '';
+    accountId = me.id;
+    isOwner = !!me.isOwner;
+    canEditSettings = Admin.hasAccess('settings');
+
+    Promise.all([
+      canEditSettings ? Admin.api('/settings') : Promise.resolve({}),
+      isOwner ? Admin.api('/auth/admin-users') : Promise.resolve([]),
+      isOwner ? Admin.api('/auth/password-requests') : Promise.resolve([])
+    ])
       .then(function (results) {
         data = results[0] || {};
         data.hours = data.hours || {};
         data.rates = data.rates || { sessions: [], servicesNote: '' };
-        accountEmail = (results[1] && results[1].email) || '';
-        accountId = results[1] && results[1].id != null ? results[1].id : null;
-        adminUsers = results[2] || [];
+        data.liveUpdate = data.liveUpdate || { enabled: false, message: '' };
+        adminUsers = results[1] || [];
+        passwordRequests = results[2] || [];
         render();
       })
       .catch(function (err) {
@@ -29,26 +49,82 @@
 
     function render() {
       content.innerHTML =
-        '<form id="settings-form">' +
-        panel('Contact & compliance', contactFields()) +
-        panel('Opening hours', hoursFields()) +
-        panel('Rates', ratesFields()) +
-        '<div class="admin-panel">' +
-        '<button type="submit" class="btn btn--pink">Save changes</button>' +
-        '<p class="form-status" role="status"></p>' +
-        '</div>' +
-        '</form>' +
+        (canEditSettings
+          ? panel('Live update', liveUpdateFields()) +
+            '<form id="settings-form">' +
+            panel('Contact & compliance', contactFields()) +
+            panel('Opening hours', hoursFields()) +
+            panel('Rates', ratesFields()) +
+            '<div class="admin-panel">' +
+            '<button type="submit" class="btn btn--pink">Save changes</button>' +
+            '<p class="form-status" role="status"></p>' +
+            '</div>' +
+            '</form>'
+          : '') +
         panel('Account', accountFields()) +
-        panel('Admin users', adminUsersFields());
+        (isOwner ? panel('Pending password requests', passwordRequestsFields()) : '') +
+        (isOwner ? panel('Admin users', adminUsersFields()) : '');
 
-      wireRateRows();
-      document.getElementById('settings-form').addEventListener('submit', onSubmit);
+      if (canEditSettings) {
+        wireRateRows();
+        document.getElementById('live-update-form').addEventListener('submit', onLiveUpdateSubmit);
+        document.getElementById('settings-form').addEventListener('submit', onSubmit);
+      }
       document.getElementById('email-form').addEventListener('submit', onEmailSubmit);
       document.getElementById('password-form').addEventListener('submit', onPasswordSubmit);
-      document.getElementById('add-admin-form').addEventListener('submit', onAddAdminSubmit);
-      content.querySelectorAll('[data-remove-admin]').forEach(function (btn) {
-        btn.addEventListener('click', function () { onRemoveAdmin(btn.dataset.removeAdmin); });
+
+      if (isOwner) {
+        document.getElementById('add-admin-form').addEventListener('submit', onAddAdminSubmit);
+        content.querySelectorAll('[data-remove-admin]').forEach(function (btn) {
+          btn.addEventListener('click', function () { onRemoveAdmin(btn.dataset.removeAdmin); });
+        });
+        content.querySelectorAll('[data-save-permissions]').forEach(function (btn) {
+          btn.addEventListener('click', function () { onSavePermissions(btn.dataset.savePermissions); });
+        });
+        content.querySelectorAll('[data-approve-request]').forEach(function (btn) {
+          btn.addEventListener('click', function () { onResolveRequest(btn.dataset.approveRequest, 'approve'); });
+        });
+        content.querySelectorAll('[data-deny-request]').forEach(function (btn) {
+          btn.addEventListener('click', function () { onResolveRequest(btn.dataset.denyRequest, 'deny'); });
+        });
+      }
+    }
+
+    function liveUpdateFields() {
+      var u = data.liveUpdate || { enabled: false, message: '' };
+      return (
+        '<form id="live-update-form" class="form">' +
+        '<div class="field full"><label class="check"><input type="checkbox" id="lu-enabled" ' +
+        (u.enabled ? 'checked' : '') +
+        '> Show a live update banner on the site</label></div>' +
+        '<div class="field full"><label for="lu-message">Message</label>' +
+        '<input id="lu-message" type="text" value="' + esc(u.message || '') + '" placeholder="e.g. Closing early today at 8pm"></div>' +
+        '<div class="field full"><button type="submit" class="btn btn--gold">Save live update</button> <p class="form-status" role="status"></p></div>' +
+        '</form>'
+      );
+    }
+
+    function onLiveUpdateSubmit(e) {
+      e.preventDefault();
+      var status = e.target.querySelector('.form-status');
+      status.textContent = '';
+      status.className = 'form-status';
+      var next = Object.assign({}, data, {
+        liveUpdate: {
+          enabled: document.getElementById('lu-enabled').checked,
+          message: document.getElementById('lu-message').value.trim()
+        }
       });
+      Admin.api('/settings', { method: 'PUT', body: next })
+        .then(function () {
+          data = next;
+          status.className = 'form-status is-ok';
+          status.textContent = 'Saved. The site now reflects this.';
+        })
+        .catch(function (err) {
+          status.className = 'form-status is-error';
+          status.textContent = err.message;
+        });
     }
 
     function accountFields() {
@@ -63,10 +139,11 @@
         '</div>' +
         '</form>' +
         '<form id="password-form" class="form">' +
+        (isOwner ? '' : '<p class="hint" style="margin-bottom:10px">New passwords need the owner&rsquo;s approval before they take effect.</p>') +
         '<div class="field"><label for="p-current">Current password</label><input id="p-current" name="currentPassword" type="password" autocomplete="current-password" required></div>' +
         '<div class="field"><label for="p-new">New password</label><input id="p-new" name="newPassword" type="password" autocomplete="new-password" minlength="8" required></div>' +
         '<div class="field full">' +
-        '<button type="submit" class="btn btn--ghost">Change password</button>' +
+        '<button type="submit" class="btn btn--ghost">' + (isOwner ? 'Change password' : 'Request password change') + '</button>' +
         '<p class="form-status" role="status"></p>' +
         '</div>' +
         '</form>'
@@ -107,9 +184,11 @@
         method: 'PUT',
         body: { currentPassword: form.currentPassword.value, newPassword: form.newPassword.value }
       })
-        .then(function () {
+        .then(function (res) {
           status.className = 'form-status is-ok';
-          status.textContent = 'Password changed.';
+          status.textContent = res && res.pending
+            ? 'Sent to the owner for approval. Your password won’t change until then.'
+            : 'Password changed.';
           form.reset();
         })
         .catch(function (err) {
@@ -126,20 +205,75 @@
       });
     }
 
+    function passwordRequestsFields() {
+      if (!passwordRequests.length) return '<p class="muted">No pending requests.</p>';
+      var rows = passwordRequests
+        .map(function (r) {
+          return (
+            '<div class="rate-editor-row" style="grid-template-columns:1fr auto auto auto">' +
+            '<span>' + esc(r.email) + '</span>' +
+            '<span class="hint">' + esc(new Date(r.createdAt).toLocaleString()) + '</span>' +
+            '<button type="button" class="btn btn--small btn--gold" data-approve-request="' + r.id + '">Approve</button>' +
+            '<button type="button" class="btn btn--small btn--ghost" data-deny-request="' + r.id + '">Deny</button>' +
+            '</div>'
+          );
+        })
+        .join('');
+      return '<div style="margin-bottom:4px">' + rows + '</div>';
+    }
+
+    function onResolveRequest(id, action) {
+      Admin.api('/auth/password-requests/' + id + '/' + action, { method: 'POST' })
+        .then(function () {
+          passwordRequests = passwordRequests.filter(function (r) { return String(r.id) !== String(id); });
+          render();
+        })
+        .catch(function (err) {
+          window.alert(err.message);
+        });
+    }
+
     function adminUsersFields() {
-      var rows = adminUsers.map(function (u) {
-        var isSelf = u.id === accountId;
-        return (
-          '<div class="rate-editor-row" style="grid-template-columns:1fr auto auto">' +
-          '<span>' + esc(u.email) + (isSelf ? ' <span class="hint">(you)</span>' : '') + '</span>' +
-          '<span class="hint">' + esc(formatLastLogin(u.last_login_at)) + '</span>' +
-          (isSelf ? '<span></span>' : '<button type="button" data-remove-admin="' + u.id + '">&times;</button>') +
-          '</div>'
-        );
-      }).join('');
+      var header =
+        '<div class="rate-editor-row rate-editor-header" style="grid-template-columns:1.4fr auto 1.8fr auto">' +
+        '<span>Email</span><span>Last signed in</span><span>Access</span><span></span></div>';
+
+      var rows = adminUsers
+        .map(function (u) {
+          var isSelf = u.id === accountId;
+          if (u.isOwner) {
+            return (
+              '<div class="rate-editor-row" style="grid-template-columns:1.4fr auto 1.8fr auto">' +
+              '<span>' + esc(u.email) + (isSelf ? ' <span class="hint">(you)</span>' : '') + '</span>' +
+              '<span class="hint">' + esc(formatLastLogin(u.last_login_at)) + '</span>' +
+              '<span class="hint">Owner &mdash; full access</span><span></span>' +
+              '</div>'
+            );
+          }
+          var checks = PERMS.map(function (p) {
+            var checked = (u.permissions || []).indexOf(p.key) !== -1;
+            return (
+              '<label class="check" style="margin-right:14px">' +
+              '<input type="checkbox" data-perm-for="' + u.id + '" value="' + p.key + '" ' + (checked ? 'checked' : '') + '> ' +
+              esc(p.label) +
+              '</label>'
+            );
+          }).join('');
+          return (
+            '<div class="rate-editor-row" style="grid-template-columns:1.4fr auto 1.8fr auto;align-items:start">' +
+            '<span>' + esc(u.email) + '</span>' +
+            '<span class="hint">' + esc(formatLastLogin(u.last_login_at)) + '</span>' +
+            '<span style="display:flex;flex-wrap:wrap;gap:6px">' + checks +
+            '<button type="button" class="btn btn--small btn--ghost" data-save-permissions="' + u.id + '" style="margin-top:4px">Save access</button>' +
+            '</span>' +
+            '<button type="button" data-remove-admin="' + u.id + '">&times;</button>' +
+            '</div>'
+          );
+        })
+        .join('');
 
       return (
-        '<div class="rate-editor-row rate-editor-header" style="grid-template-columns:1fr auto auto"><span>Email</span><span>Last signed in</span><span></span></div>' +
+        header +
         '<div id="admin-users-list" style="margin-bottom:18px">' + rows + '</div>' +
         '<form id="add-admin-form" class="form">' +
         '<div class="field"><label for="a-email">Email</label><input id="a-email" name="email" type="email" autocomplete="off" required></div>' +
@@ -150,6 +284,25 @@
         '</div>' +
         '</form>'
       );
+    }
+
+    function onSavePermissions(id) {
+      var checks = content.querySelectorAll('input[data-perm-for="' + id + '"]:checked');
+      var permissions = Array.from(checks).map(function (cb) { return cb.value; });
+      Admin.api('/auth/admin-users/' + id + '/permissions', { method: 'PUT', body: { permissions: permissions } })
+        .then(function () {
+          var u = adminUsers.filter(function (x) { return String(x.id) === String(id); })[0];
+          if (u) u.permissions = permissions;
+          var btn = content.querySelector('[data-save-permissions="' + id + '"]');
+          if (btn) {
+            var original = btn.textContent;
+            btn.textContent = 'Saved';
+            setTimeout(function () { btn.textContent = original; }, 1500);
+          }
+        })
+        .catch(function (err) {
+          window.alert(err.message);
+        });
     }
 
     function onAddAdminSubmit(e) {
@@ -201,15 +354,12 @@
       return (
         '<div class="form">' +
         field('Registered business name', 'legalName', data.legalName) +
-        field('Business registration no.', 'registrationNo', data.registrationNo) +
         field('ABN', 'abn', data.abn) +
-        field('Licence / permit no.', 'licence', data.licence) +
         field('Address', 'address', data.address) +
         field('Suburb / state / postcode', 'suburb', data.suburb) +
         field('Phone', 'phone', data.phone) +
         field('Second phone (optional)', 'phone2', data.phone2) +
-        field('Booking email', 'email', data.email, 'email') +
-        field('Recruitment email', 'recruitEmail', data.recruitEmail, 'email') +
+        field('Email', 'email', data.email, 'email') +
         field('Parking details', 'parking', data.parking) +
         field('Accepted payment methods', 'payment', data.payment) +
         '</div>'
@@ -298,7 +448,7 @@
       var next = Object.assign({}, data);
       next.hours = {};
       DAYS.forEach(function (d) { next.hours[d] = fd.get('hours_' + d) || ''; });
-      ['legalName', 'registrationNo', 'abn', 'licence', 'address', 'suburb', 'phone', 'phone2', 'email', 'recruitEmail', 'parking', 'payment', 'hoursSummary'].forEach(
+      ['legalName', 'abn', 'address', 'suburb', 'phone', 'phone2', 'email', 'parking', 'payment', 'hoursSummary'].forEach(
         function (key) { next[key] = fd.get(key) || ''; }
       );
       next.rates = collectRates();

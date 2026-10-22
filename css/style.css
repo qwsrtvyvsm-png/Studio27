@@ -187,6 +187,27 @@ ul { padding: 0; list-style: none; }
 .tag--gold { background: var(--gold); color: #1a0f08; }
 .tag--small { padding: 2px 6px; margin-left: 6px; vertical-align: middle; }
 
+/* ---------- Live update banner ---------- */
+.live-update {
+  background: var(--magenta); color: #fff;
+  font-family: var(--font-sans); font-size: 13px; font-weight: 600; letter-spacing: .02em;
+  text-align: center;
+}
+.live-update .container { display: flex; align-items: center; justify-content: center; gap: 10px; padding: 10px 24px; }
+.live-update__dot {
+  width: 7px; height: 7px; border-radius: 50%; background: var(--gold-light); flex: none;
+  box-shadow: 0 0 0 0 rgba(243, 216, 146, .6);
+  animation: live-update-pulse 2s infinite;
+}
+@keyframes live-update-pulse {
+  0% { box-shadow: 0 0 0 0 rgba(243, 216, 146, .6); }
+  70% { box-shadow: 0 0 0 7px rgba(243, 216, 146, 0); }
+  100% { box-shadow: 0 0 0 0 rgba(243, 216, 146, 0); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .live-update__dot { animation: none; }
+}
+
 /* ---------- Header ---------- */
 .site-header {
   position: sticky; top: 0; z-index: 50;

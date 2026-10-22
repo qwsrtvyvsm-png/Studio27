@@ -9,6 +9,7 @@
   Admin.requireSession(function () {
     Admin.mountShell('enquiries', 'Enquiries & Applications', 'Booking requests and job applications from the public site.');
     var content = document.getElementById('admin-content');
+    if (!Admin.hasAccess('enquiries')) { content.innerHTML = Admin.accessDeniedHTML(); return; }
     content.innerHTML =
       '<div class="admin-panel">' +
       '<div class="tabs" id="type-tabs">' +

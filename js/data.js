@@ -11,9 +11,7 @@ const SITE = {
 
   // Compliance / advertising disclosures (shown in every footer)
   legalName: '[Registered Business Name]',
-  registrationNo: '[Business Registration No.]',
   abn: '[00 000 000 000]',
-  licence: '[Licence / Permit No.]',
 
   // Location & contact
   address: '[Street Address]',
@@ -21,8 +19,10 @@ const SITE = {
   phone: '[0400 000 000]',
   phone2: '',
   email: '[bookings@studio27.com.au]',
-  recruitEmail: '[jobs@studio27.com.au]',
   parking: '[Parking details, e.g. free parking at rear]',
+
+  // Live update banner, shown site-wide when enabled (e.g. an early close)
+  liveUpdate: { enabled: false, message: '' },
 
   // Social media
   social: {
