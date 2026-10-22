@@ -20,7 +20,7 @@
     { href: 'index.html', label: 'Home', id: 'home' },
     { href: 'about.html', label: 'About', id: 'about' },
     { href: 'ladies.html', label: 'Ladies', id: 'models' },
-    { href: 'roster.html', label: 'Roster & Hours', id: 'roster' },
+    { href: 'roster.html', label: 'Roster', id: 'roster' },
     { href: 'rates.html', label: 'Rates', id: 'rates' },
     { href: 'news.html', label: 'News & Updates', id: 'news' },
     { href: 'contact.html', label: 'Contact', id: 'contact' }
@@ -46,7 +46,7 @@
         '<div class="container site-header__inner">' +
           '<a class="brand" href="index.html" aria-label="Studio 27 home">' +
             '<span class="brand__mark">27</span>' +
-            '<span class="brand__text"><span class="brand__name">Studio 27</span><span class="brand__sub">Men&rsquo;s Studio</span></span>' +
+            '<span class="brand__text"><span class="brand__name">Studio 27</span></span>' +
           '</a>' +
           '<button class="nav-toggle" aria-expanded="false" aria-controls="site-nav">' +
             '<span></span><span></span><span></span><span class="sr-only">Menu</span>' +
@@ -59,14 +59,30 @@
       '</header>';
   }
 
+  /* ---------- Social links ---------- */
+  function socialHTML() {
+    var ICONS = {
+      instagram: '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true"><rect x="2.5" y="2.5" width="19" height="19" rx="5" stroke="currentColor" stroke-width="1.6"/><circle cx="12" cy="12" r="4.3" stroke="currentColor" stroke-width="1.6"/><circle cx="17.3" cy="6.7" r="1.1" fill="currentColor"/></svg>',
+      x: '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M3 3l7.5 9.2L3.4 21h2.3l6-6.9L17 21h3.6l-7.8-9.6L20.3 3H18l-5.6 6.4L7.3 3H3Z" fill="currentColor"/></svg>',
+      reddit: '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true"><circle cx="12" cy="14.2" r="7.3" stroke="currentColor" stroke-width="1.6"/><circle cx="9" cy="14" r="1.15" fill="currentColor"/><circle cx="15" cy="14" r="1.15" fill="currentColor"/><path d="M8.7 17c.9.7 1.9 1 3.3 1s2.4-.3 3.3-1" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/><path d="M12 6.9V4.3m0 0h2.2M12 4.3H9.8" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/><circle cx="12" cy="4.3" r="1.1" fill="currentColor"/></svg>'
+    };
+    var LABELS = { instagram: 'Instagram', x: 'X (Twitter)', reddit: 'Reddit' };
+    var social = SITE.social || {};
+    var links = Object.keys(ICONS).filter(function (key) { return social[key]; }).map(function (key) {
+      return '<a class="social-links__item" href="' + esc(social[key]) + '" target="_blank" rel="noopener noreferrer"><span class="sr-only">' + LABELS[key] + '</span>' + ICONS[key] + '</a>';
+    }).join('');
+    return links ? '<div class="social-links">' + links + '</div>' : '';
+  }
+
   /* ---------- Footer ---------- */
   function footerInnerHTML() {
     return '' +
         '<div class="container footer-grid">' +
           '<div class="footer-brand">' +
             '<a class="brand" href="index.html"><span class="brand__mark">27</span>' +
-            '<span class="brand__text"><span class="brand__name">Studio 27</span><span class="brand__sub">Men&rsquo;s Studio</span></span></a>' +
+            '<span class="brand__text"><span class="brand__name">Studio 27</span></span></a>' +
             '<p class="footer-tagline">' + esc(SITE.tagline) + '</p>' +
+            socialHTML() +
             '<p class="age-badge"><span>18+</span> This site is intended for adults aged 18 and over.</p>' +
           '</div>' +
           '<div>' +
@@ -81,8 +97,8 @@
             '<ul>' +
               '<li><a href="about.html">About Us</a></li>' +
               '<li><a href="ladies.html">Ladies</a></li>' +
-              '<li><a href="roster.html">Roster &amp; Hours</a></li>' +
-              '<li><a href="rates.html">Rates &amp; Services</a></li>' +
+              '<li><a href="roster.html">Roster</a></li>' +
+              '<li><a href="rates.html">Rates</a></li>' +
               '<li><a href="house-rules.html">House Rules</a></li>' +
               '<li><a href="news.html">News &amp; Updates</a></li>' +
               '<li><a href="work-with-us.html">Apply Now</a></li>' +
@@ -213,7 +229,7 @@
   }
 
   function renderRates(el) {
-    var rates = SITE.rates || { sessions: [], services: [], servicesNote: '' };
+    var rates = SITE.rates || { sessions: [], servicesNote: '' };
     var sessionsHTML = (rates.sessions || [])
       .map(function (s) {
         var incall = s.incallPrice != null ? s.incallPrice : s.price;
@@ -225,19 +241,11 @@
           '</span></li>';
       })
       .join('');
-    var servicesHTML = (rates.services || [])
-      .map(function (s) {
-        return '<li><span class="name">' + esc(s.name) + (s.description ? '<small>' + esc(s.description) + '</small>' : '') +
-          '</span><span class="dots"></span><span class="price">$' + esc(s.price) + '</span></li>';
-      })
-      .join('');
     el.innerHTML = '' +
       '<div class="rate-menu"><h2 class="h3">Sessions</h2>' +
       '<p>All sessions include a private room and shower facilities.</p>' +
       '<ul class="rate-list">' + (sessionsHTML || '<li>Rates coming soon &mdash; please call to ask.</li>') + '</ul></div>' +
-      '<div class="rate-menu"><h2 class="h3">Services</h2>' +
-      '<p>' + esc(rates.servicesNote || '') + '</p>' +
-      '<ul class="rate-list">' + (servicesHTML || '<li>Services coming soon &mdash; please call to ask.</li>') + '</ul></div>';
+      '<p class="notice">' + esc(rates.servicesNote || '') + '</p>';
   }
 
   function renderHours(el) {
@@ -253,20 +261,88 @@
       ? '<img src="' + esc(m.photo) + '" alt="' + esc(m.name) + '" loading="lazy">'
       : '<div class="model-card__placeholder" aria-hidden="true"><span>27</span><small>Photo coming soon</small></div>';
     var onToday = m.days.indexOf(TODAY) !== -1;
+    var profileHref = 'lady.html?id=' + encodeURIComponent(m.id != null ? m.id : '');
     return '' +
       '<article class="model-card">' +
-        '<div class="model-card__photo">' + photo +
+        '<a class="model-card__photo" href="' + profileHref + '">' + photo +
           (m.isNew ? '<span class="tag">New</span>' : '') +
           (onToday ? '<span class="tag tag--gold">On today</span>' : '') +
-        '</div>' +
+        '</a>' +
         '<div class="model-card__body">' +
-          '<h3>' + esc(m.name) + '</h3>' +
+          '<h3><a href="' + profileHref + '">' + esc(m.name) + '</a></h3>' +
           (m.age ? '<p class="model-card__age">Age ' + esc(m.age) + '</p>' : '') +
           '<p>' + esc(m.intro) + '</p>' +
           '<p class="model-card__days"><span>Available</span> ' + (m.days.length ? m.days.join(' &middot; ') : 'By request') + '</p>' +
-          '<a class="link-arrow" href="contact.html?model=' + encodeURIComponent(m.name) + '">Enquire</a>' +
+          '<a class="link-arrow" href="' + profileHref + '">View profile</a>' +
         '</div>' +
       '</article>';
+  }
+
+  function renderLadyProfile(el) {
+    var id = new URLSearchParams(location.search).get('id');
+    if (!id) {
+      el.innerHTML = notFoundHTML();
+      return;
+    }
+    fetch('/api/public/models/' + encodeURIComponent(id))
+      .then(function (res) { return res.ok ? res.json() : null; })
+      .catch(function () { return null; })
+      .then(function (m) {
+        el.innerHTML = m ? ladyProfileHTML(m) : notFoundHTML();
+        if (m) document.title = m.name + ' | Studio 27';
+      });
+  }
+
+  function notFoundHTML() {
+    return '' +
+      '<section class="page-hero"><div class="container">' +
+        '<p class="eyebrow">Studio 27</p>' +
+        '<h1 class="display">Profile not <em>found</em></h1>' +
+        '<p class="lead">This lady may no longer be with us, or the link is out of date.</p>' +
+        '<div class="btn-row" style="justify-content:center;margin-top:18px">' +
+          '<a class="btn btn--gold" href="ladies.html">All Ladies</a>' +
+        '</div>' +
+      '</div></section>';
+  }
+
+  function ladyProfileHTML(m) {
+    var meta = [
+      m.age ? { label: 'Age', value: m.age } : null,
+      m.ethnicity ? { label: 'Ethnicity', value: m.ethnicity } : null,
+      m.size ? { label: 'Size', value: m.size } : null
+    ].filter(Boolean);
+
+    var gallery = (m.photos || []).length
+      ? '<div class="lady-gallery">' + m.photos.map(function (src) {
+          return '<img src="' + esc(src) + '" alt="' + esc(m.name) + '" loading="lazy">';
+        }).join('') + '</div>'
+      : '<div class="model-card__placeholder lady-gallery__empty" aria-hidden="true"><span>27</span><small>Gallery coming soon</small></div>';
+
+    return '' +
+      '<section class="page-hero"><div class="container">' +
+        '<p class="eyebrow">Meet</p>' +
+        '<h1 class="display">' + esc(m.name) + '</h1>' +
+        (m.intro ? '<p class="lead">' + esc(m.intro) + '</p>' : '') +
+      '</div></section>' +
+      '<section class="section"><div class="container split split--reverse">' +
+        '<div>' +
+          (meta.length
+            ? '<dl class="info-list">' + meta.map(function (f) {
+                return '<div><dt>' + esc(f.label) + '</dt><dd>' + esc(f.value) + '</dd></div>';
+              }).join('') + '</dl>'
+            : '') +
+          '<h2 class="h3">About</h2>' +
+          '<p>' + esc(m.about || m.intro || 'Details coming soon.') + '</p>' +
+          '<p class="model-card__days" style="margin:22px 0 28px"><span>Available</span> ' +
+            ((m.days || []).length ? m.days.join(' &middot; ') + (m.time ? ' &middot; ' + esc(m.time) : '') : 'By request') +
+          '</p>' +
+          '<div class="btn-row">' +
+            '<a class="btn btn--gold" href="contact.html?model=' + encodeURIComponent(m.name) + '">Enquire</a>' +
+            '<a class="btn btn--ghost" href="ladies.html">All Ladies</a>' +
+          '</div>' +
+        '</div>' +
+        gallery +
+      '</div></section>';
   }
 
   function renderModels(el) {
@@ -279,7 +355,7 @@
       return '<th scope="col"' + (d === TODAY ? ' class="is-today"' : '') + '>' + d + '</th>';
     }).join('') + '</tr>';
     var rows = MODELS.map(function (m) {
-      return '<tr><th scope="row">' + esc(m.name) + '</th>' + DAYS.map(function (d) {
+      return '<tr><th scope="row"><a href="lady.html?id=' + encodeURIComponent(m.id != null ? m.id : '') + '">' + esc(m.name) + '</a></th>' + DAYS.map(function (d) {
         var on = m.days.indexOf(d) !== -1;
         return '<td class="' + (d === TODAY ? 'is-today ' : '') + (on ? 'is-on' : 'is-off') + '">' + (on ? esc(m.time) : '&mdash;') + '</td>';
       }).join('') + '</tr>';
@@ -439,6 +515,9 @@
     renderContent();
     loadLiveContent();
     wireForms();
+
+    var ladyProfileEl = document.querySelector('[data-lady-profile]');
+    if (ladyProfileEl) renderLadyProfile(ladyProfileEl);
 
     // Legal pages are readable without passing the gate
     if ('noGate' in body.dataset) {

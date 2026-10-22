@@ -17,7 +17,7 @@
       .then(function (results) {
         data = results[0] || {};
         data.hours = data.hours || {};
-        data.rates = data.rates || { sessions: [], services: [], servicesNote: '' };
+        data.rates = data.rates || { sessions: [], servicesNote: '' };
         accountEmail = (results[1] && results[1].email) || '';
         accountId = results[1] && results[1].id != null ? results[1].id : null;
         adminUsers = results[2] || [];
@@ -118,18 +118,28 @@
         });
     }
 
+    function formatLastLogin(value) {
+      if (!value) return 'Never signed in';
+      return new Date(value).toLocaleString(undefined, {
+        dateStyle: 'medium',
+        timeStyle: 'short'
+      });
+    }
+
     function adminUsersFields() {
       var rows = adminUsers.map(function (u) {
         var isSelf = u.id === accountId;
         return (
-          '<div class="rate-editor-row" style="grid-template-columns:1fr auto">' +
+          '<div class="rate-editor-row" style="grid-template-columns:1fr auto auto">' +
           '<span>' + esc(u.email) + (isSelf ? ' <span class="hint">(you)</span>' : '') + '</span>' +
+          '<span class="hint">' + esc(formatLastLogin(u.last_login_at)) + '</span>' +
           (isSelf ? '<span></span>' : '<button type="button" data-remove-admin="' + u.id + '">&times;</button>') +
           '</div>'
         );
       }).join('');
 
       return (
+        '<div class="rate-editor-row rate-editor-header" style="grid-template-columns:1fr auto auto"><span>Email</span><span>Last signed in</span><span></span></div>' +
         '<div id="admin-users-list" style="margin-bottom:18px">' + rows + '</div>' +
         '<form id="add-admin-form" class="form">' +
         '<div class="field"><label for="a-email">Email</label><input id="a-email" name="email" type="email" autocomplete="off" required></div>' +
@@ -225,12 +235,10 @@
         '<div class="rate-editor-row rate-editor-row--session rate-editor-header"><span>Duration</span><span>Incall</span><span>Outcall</span><span></span></div>' +
         '<div id="sessions-rows">' + (data.rates.sessions || []).map(sessionRow).join('') + '</div>' +
         '<button type="button" class="btn btn--small btn--ghost" id="add-session">+ Add session</button>' +
-        '<h3 class="h3" style="font-size:1rem;margin:28px 0 10px">Services</h3>' +
+        '<h3 class="h3" style="font-size:1rem;margin:28px 0 10px">Services notice</h3>' +
         '<p class="hint" style="margin-bottom:10px">' +
-        '<label>Note shown above the services list &mdash; <input type="text" id="services-note" value="' + esc(data.rates.servicesNote || '') + '" style="width:60%;min-width:220px"></label>' +
+        '<label>Note shown below the rates &mdash; <input type="text" id="services-note" value="' + esc(data.rates.servicesNote || '') + '" style="width:60%;min-width:220px"></label>' +
         '</p>' +
-        '<div id="services-rows">' + (data.rates.services || []).map(serviceRow).join('') + '</div>' +
-        '<button type="button" class="btn btn--small btn--ghost" id="add-service">+ Add service</button>' +
         '</div>'
       );
     }
@@ -248,40 +256,16 @@
       );
     }
 
-    function serviceRow(s, i) {
-      return (
-        '<div class="rate-editor-row" data-service-row="' + i + '">' +
-        '<input placeholder="Service name" value="' + esc(s.name || '') + '" data-service-name>' +
-        '<input placeholder="Short description" value="' + esc(s.description || '') + '" data-service-desc>' +
-        '<input placeholder="Price" value="' + esc(s.price || '') + '" data-service-price>' +
-        '<button type="button" data-remove-service="' + i + '">&times;</button>' +
-        '</div>'
-      );
-    }
-
     function wireRateRows() {
       document.getElementById('add-session').addEventListener('click', function () {
         data.rates = collectRates();
         data.rates.sessions.push({ name: '', incallPrice: '', outcallPrice: '' });
         rerenderRatesOnly();
       });
-      document.getElementById('add-service').addEventListener('click', function () {
-        data.rates = collectRates();
-        data.rates.services.push({ name: '', description: '', price: '' });
-        rerenderRatesOnly();
-      });
       content.querySelectorAll('[data-remove-session]').forEach(function (btn) {
         btn.addEventListener('click', function () {
           var all = collectRates();
           all.sessions.splice(Number(btn.dataset.removeSession), 1);
-          data.rates = all;
-          rerenderRatesOnly();
-        });
-      });
-      content.querySelectorAll('[data-remove-service]').forEach(function (btn) {
-        btn.addEventListener('click', function () {
-          var all = collectRates();
-          all.services.splice(Number(btn.dataset.removeService), 1);
           data.rates = all;
           rerenderRatesOnly();
         });
@@ -302,15 +286,8 @@
           outcallPrice: row.querySelector('[data-session-outcall]').value.trim()
         };
       });
-      var services = Array.from(document.querySelectorAll('#services-rows [data-service-row]')).map(function (row) {
-        return {
-          name: row.querySelector('[data-service-name]').value.trim(),
-          description: row.querySelector('[data-service-desc]').value.trim(),
-          price: row.querySelector('[data-service-price]').value.trim()
-        };
-      });
       var noteEl = document.getElementById('services-note');
-      return { sessions: sessions, services: services, servicesNote: noteEl ? noteEl.value.trim() : (data.rates.servicesNote || '') };
+      return { sessions: sessions, servicesNote: noteEl ? noteEl.value.trim() : (data.rates.servicesNote || '') };
     }
 
     function onSubmit(e) {

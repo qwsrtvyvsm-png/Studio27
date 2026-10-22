@@ -16,7 +16,7 @@ router.use(requireAuth);
 
 router.get('/', async (req, res) => {
   const { rows } = await pool.query(
-    `SELECT id, name, division_id, status, age, intro, days, time, is_new AS "isNew", display_order
+    `SELECT id, name, division_id, status, age, ethnicity, size, intro, about, days, time, is_new AS "isNew", display_order
      FROM models ORDER BY display_order ASC, id ASC`
   );
   res.json(rows);
@@ -26,15 +26,18 @@ router.post('/', async (req, res) => {
   const b = req.body;
   if (!b.name) return res.status(400).json({ error: 'Name is required.' });
   const { rows } = await pool.query(
-    `INSERT INTO models (name, division_id, status, age, intro, days, time, is_new, display_order)
-     VALUES ($1, $2, $3, $4, $5, $6, $7, $8, (SELECT COALESCE(MAX(display_order), -1) + 1 FROM models))
+    `INSERT INTO models (name, division_id, status, age, ethnicity, size, intro, about, days, time, is_new, display_order)
+     VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, (SELECT COALESCE(MAX(display_order), -1) + 1 FROM models))
      RETURNING id`,
     [
       b.name,
       b.division_id || null,
       b.status || 'active',
       b.age || null,
+      b.ethnicity || '',
+      b.size || '',
       b.intro || '',
+      b.about || '',
       Array.isArray(b.days) ? b.days : [],
       b.time || '',
       !!b.isNew
@@ -67,14 +70,17 @@ router.put('/:id', async (req, res) => {
   const b = req.body;
   if (!b.name) return res.status(400).json({ error: 'Name is required.' });
   await pool.query(
-    `UPDATE models SET name=$1, division_id=$2, status=$3, age=$4, intro=$5, days=$6, time=$7, is_new=$8
-     WHERE id = $9`,
+    `UPDATE models SET name=$1, division_id=$2, status=$3, age=$4, ethnicity=$5, size=$6, intro=$7, about=$8, days=$9, time=$10, is_new=$11
+     WHERE id = $12`,
     [
       b.name,
       b.division_id || null,
       b.status || 'active',
       b.age || null,
+      b.ethnicity || '',
+      b.size || '',
       b.intro || '',
+      b.about || '',
       Array.isArray(b.days) ? b.days : [],
       b.time || '',
       !!b.isNew,

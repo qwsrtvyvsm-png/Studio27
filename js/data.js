@@ -23,6 +23,13 @@ const SITE = {
   email: '[bookings@studio27.com.au]',
   recruitEmail: '[jobs@studio27.com.au]',
   parking: '[Parking details, e.g. free parking at rear]',
+
+  // Social media
+  social: {
+    instagram: 'https://www.instagram.com/studio27.adl',
+    x: 'https://x.com/twentysevenadl',
+    reddit: 'https://www.reddit.com/u/OkMetal1969'
+  },
   payment: '[Accepted payment methods, e.g. cash & card]',
 
   // Opening hours
@@ -47,13 +54,7 @@ const SITE = {
       { name: '90 minutes', incallPrice: '[000]', outcallPrice: '[000]' },
       { name: '2 hours', incallPrice: '[000]', outcallPrice: '[000]' }
     ],
-    servicesNote: '[Short note about how services are agreed.]',
-    services: [
-      { name: '[Service name]', description: '[Short description]', price: '[000]' },
-      { name: '[Service name]', description: '[Short description]', price: '[000]' },
-      { name: '[Service name]', description: '[Short description]', price: '[000]' },
-      { name: '[Service name]', description: '[Short description]', price: '[000]' }
-    ]
+    servicesNote: 'Services are to be discussed in private room with chosen lady.'
   },
 
   // Editable page copy (admin dashboard — Site Content). This is the
@@ -72,35 +73,37 @@ const SITE = {
       { heading: 'Open Late', body: '[Open 7 days with late-night hours. Bookings and walk-ins welcome.]' }
     ],
     about: {
-      lead: '[One or two sentences on why Studio 27 exists and what it stands for.]',
+      lead: 'Studio 27 exists for one reason: to give you somewhere to properly switch off.',
       paragraphs: [
-        '[Tell the story of the studio — how it started, the vision behind the space, and what guests love about it.]',
-        '[Talk about the team: professional, friendly, and focused on making every visit relaxed and enjoyable.]'
+        'Beautiful private rooms, genuinely good company, and not a single thing to perform or prove.',
+        'Come for an hour or make an afternoon of it — either way, this one’s entirely yours.'
       ],
       values: [
-        { heading: 'Discretion', body: 'Your privacy is protected at every step, from booking to departure.' },
-        { heading: 'Respect', body: 'Guests and staff are treated with courtesy and respect, always.' },
-        { heading: 'Comfort', body: 'Clean, private rooms with everything you need to relax.' },
-        { heading: 'Safety', body: 'A safe, professional and fully compliant environment for everyone.' }
+        { heading: 'Discretion', body: 'Your business is your business. Full stop.' },
+        { heading: 'Warmth', body: 'Real conversation, real chemistry — never forced.' },
+        { heading: 'Indulgence, done properly', body: 'Beautiful rooms, unhurried time, zero shortcuts.' },
+        { heading: 'Respect', body: 'For every person who walks through our door — client or team.' }
       ]
     },
     faq: [
       {
         title: 'Bookings',
         items: [
-          { question: 'Do I need to book?', answer: 'Bookings are recommended, especially on weekends and evenings. Walk-ins are welcome subject to availability.' },
+          { question: 'Do I need to book, or can I just show up?', answer: 'Either works for us. We’re open 7 days and love a good walk-in, but booking ahead means your favourite is guaranteed to be free.' },
           { question: 'How do I make a booking?', answer: 'Call or text us, or send a request through our contact page. Your booking is confirmed once you hear back from us.' },
           { question: 'Can I request a specific lady?', answer: 'Yes. Check the roster to see who’s working, then mention your preference when you book.' },
-          { question: 'What if I need to cancel or reschedule?', answer: 'Please give us as much notice as possible. See our Cancellation, Refund & Rescheduling Policy.' }
+          { question: 'Can I stay longer than I booked?', answer: 'Absolutely, if the lady requested is available — just ask and we’ll sort the rest.' },
+          { question: 'Plans change — what’s your cancellation policy?', answer: 'Life happens. Full details in our Cancellation, Refund & Rescheduling Policy.' }
         ]
       },
       {
         title: 'Your visit',
         items: [
-          { question: 'Is it discreet?', answer: 'Absolutely. [Describe discreet entry, parking and how payments appear on statements.]' },
+          { question: 'Will anyone know I was here?', answer: 'No. What happens at Studio 27 stays there — your visit, your details, your business.' },
+          { question: 'What do I need to bring?', answer: 'Just valid photo ID (18+) and an open mind. We’ll handle the rest.' },
+          { question: 'Incall vs outcall — what’s the difference?', answer: 'Incall: you come to us and enjoy the full studio experience. Outcall: we bring the experience to you. Rates for both are on our Rates page.' },
           { question: 'How do I pay?', answer: 'Payment is made at reception before your session. [List accepted payment methods.]' },
           { question: 'Is there parking?', answer: '[Parking details.]' },
-          { question: 'Will I be asked for ID?', answer: 'All guests must be 18 or over. We may ask for photo ID if you look under 25.' },
           { question: 'Are showers available?', answer: 'Yes. Every room has shower facilities with fresh towels provided.' }
         ]
       },
@@ -121,17 +124,21 @@ const SITE = {
 };
 
 /* Models
-   photo:  path to an image in /images, e.g. 'images/models/ruby.jpg'
-           (leave '' to show the "photo coming soon" placeholder)
-   age:    must be 18 or over
-   days:   any of 'Mon','Tue','Wed','Thu','Fri','Sat','Sun'
-   time:   shift shown on the roster for those days
-   isNew:  true shows a "New" tag                                   */
+   photo:     path to an image in /images, e.g. 'images/models/ruby.jpg'
+              (leave '' to show the "photo coming soon" placeholder)
+   age:       must be 18 or over
+   ethnicity: shown on their profile page
+   size:      shown on their profile page, e.g. '8 (AU)'
+   intro:     short blurb shown on cards
+   about:     longer bio shown on their profile page
+   days:      any of 'Mon','Tue','Wed','Thu','Fri','Sat','Sun'
+   time:      shift shown on the roster for those days
+   isNew:     true shows a "New" tag                                   */
 const MODELS = [
-  { name: '[Model 1]', photo: '', age: 18, intro: '[A short, tasteful introduction.]', days: ['Mon', 'Wed', 'Fri'], time: '10am – 6pm', isNew: true },
-  { name: '[Model 2]', photo: '', age: 18, intro: '[A short, tasteful introduction.]', days: ['Tue', 'Thu', 'Sat'], time: '6pm – late', isNew: false },
-  { name: '[Model 3]', photo: '', age: 18, intro: '[A short, tasteful introduction.]', days: ['Mon', 'Tue', 'Sun'], time: '12pm – 8pm', isNew: false },
-  { name: '[Model 4]', photo: '', age: 18, intro: '[A short, tasteful introduction.]', days: ['Wed', 'Fri', 'Sat'], time: '8pm – late', isNew: true },
-  { name: '[Model 5]', photo: '', age: 18, intro: '[A short, tasteful introduction.]', days: ['Thu', 'Sat', 'Sun'], time: '10am – 6pm', isNew: false },
-  { name: '[Model 6]', photo: '', age: 18, intro: '[A short, tasteful introduction.]', days: ['Mon', 'Fri', 'Sun'], time: '6pm – late', isNew: false }
+  { id: 1, name: '[Model 1]', photo: '', photos: [], age: 18, ethnicity: '[Ethnicity]', size: '[Size]', intro: '[A short, tasteful introduction.]', about: '[A longer bio for their profile page.]', days: ['Mon', 'Wed', 'Fri'], time: '10am – 6pm', isNew: true },
+  { id: 2, name: '[Model 2]', photo: '', photos: [], age: 18, ethnicity: '[Ethnicity]', size: '[Size]', intro: '[A short, tasteful introduction.]', about: '[A longer bio for their profile page.]', days: ['Tue', 'Thu', 'Sat'], time: '6pm – late', isNew: false },
+  { id: 3, name: '[Model 3]', photo: '', photos: [], age: 18, ethnicity: '[Ethnicity]', size: '[Size]', intro: '[A short, tasteful introduction.]', about: '[A longer bio for their profile page.]', days: ['Mon', 'Tue', 'Sun'], time: '12pm – 8pm', isNew: false },
+  { id: 4, name: '[Model 4]', photo: '', photos: [], age: 18, ethnicity: '[Ethnicity]', size: '[Size]', intro: '[A short, tasteful introduction.]', about: '[A longer bio for their profile page.]', days: ['Wed', 'Fri', 'Sat'], time: '8pm – late', isNew: true },
+  { id: 5, name: '[Model 5]', photo: '', photos: [], age: 18, ethnicity: '[Ethnicity]', size: '[Size]', intro: '[A short, tasteful introduction.]', about: '[A longer bio for their profile page.]', days: ['Thu', 'Sat', 'Sun'], time: '10am – 6pm', isNew: false },
+  { id: 6, name: '[Model 6]', photo: '', photos: [], age: 18, ethnicity: '[Ethnicity]', size: '[Size]', intro: '[A short, tasteful introduction.]', about: '[A longer bio for their profile page.]', days: ['Mon', 'Fri', 'Sun'], time: '6pm – late', isNew: false }
 ];

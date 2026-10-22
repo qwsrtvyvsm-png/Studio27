@@ -52,7 +52,17 @@ app.use('/js', express.static(path.join(ROOT, 'js')));
 app.use('/images', express.static(path.join(ROOT, 'images')));
 app.use('/admin', express.static(path.join(ROOT, 'admin')));
 
-app.get('/', (req, res) => res.sendFile(path.join(ROOT, 'index.html')));
+/* Visiting the admin subdomain's root should land on the dashboard,
+   not the public homepage — admin.js then bounces to login.html itself
+   if there's no session. */
+function isAdminHost(req) {
+  return (req.hostname || '').split('.')[0] === 'admin';
+}
+
+app.get('/', (req, res) => {
+  if (isAdminHost(req)) return res.redirect('/admin/index.html');
+  res.sendFile(path.join(ROOT, 'index.html'));
+});
 
 app.get('/:page.html', (req, res, next) => {
   res.sendFile(path.join(ROOT, `${req.params.page}.html`), (err) => {

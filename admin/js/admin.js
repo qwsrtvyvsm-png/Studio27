@@ -43,7 +43,8 @@
 
   function sidebarHTML(page) {
     var links = NAV.map(function (n) {
-      return '<li><a href="' + n.href + '"' + (n.id === page ? ' aria-current="page"' : '') + '>' + n.label + '</a></li>';
+      return '<li><a href="' + n.href + '" data-nav="' + n.id + '"' + (n.id === page ? ' aria-current="page"' : '') + '>' +
+        '<span class="admin-nav__label">' + n.label + '</span></a></li>';
     }).join('');
     return '' +
       '<aside class="admin-sidebar">' +
@@ -53,7 +54,7 @@
       '</aside>';
   }
 
-  function mountShell(page, title, subtitle) {
+  function mountShell(page, title, subtitle, actionsHTML) {
     var root = document.getElementById('admin-root');
     if (!root) return;
     root.insertAdjacentHTML(
@@ -62,7 +63,7 @@
         '<main class="admin-main">' +
         '<div class="admin-topbar"><div><h1>' + esc(title) + '</h1>' +
         (subtitle ? '<p>' + esc(subtitle) + '</p>' : '') +
-        '</div></div>' +
+        '</div>' + (actionsHTML || '') + '</div>' +
         '<div id="admin-content"></div>' +
         '</main>'
     );
@@ -73,6 +74,22 @@
         });
       }
     });
+  }
+
+  function setNavBadge(page, count) {
+    var link = document.querySelector('.admin-nav a[data-nav="' + page + '"]');
+    if (!link) return;
+    var existing = link.querySelector('.admin-nav__badge');
+    if (!count) {
+      if (existing) existing.remove();
+      return;
+    }
+    if (!existing) {
+      existing = document.createElement('span');
+      existing.className = 'admin-nav__badge';
+      link.appendChild(existing);
+    }
+    existing.textContent = count;
   }
 
   function requireSession(onReady) {
@@ -89,5 +106,5 @@
       });
   }
 
-  window.Admin = { api: api, esc: esc, mountShell: mountShell, requireSession: requireSession };
+  window.Admin = { api: api, esc: esc, mountShell: mountShell, requireSession: requireSession, setNavBadge: setNavBadge };
 })();

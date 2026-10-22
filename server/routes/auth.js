@@ -33,7 +33,7 @@ router.post('/setup', authLimiter, async (req, res) => {
 
   const hash = await bcrypt.hash(password, 12);
   const inserted = await pool.query(
-    'INSERT INTO admin_users (email, password_hash) VALUES ($1, $2) RETURNING id',
+    'INSERT INTO admin_users (email, password_hash, last_login_at) VALUES ($1, $2, now()) RETURNING id',
     [email, hash]
   );
   req.session.userId = inserted.rows[0].id;
@@ -57,6 +57,7 @@ router.post('/login', authLimiter, async (req, res) => {
     return res.status(401).json({ error: 'Invalid email or password.' });
   }
 
+  await pool.query('UPDATE admin_users SET last_login_at = now() WHERE id = $1', [user.id]);
   req.session.userId = user.id;
   res.json({ ok: true });
 });
@@ -118,7 +119,7 @@ router.put('/email', requireAuth, authLimiter, async (req, res) => {
 });
 
 router.get('/admin-users', requireAuth, async (req, res) => {
-  const { rows } = await pool.query('SELECT id, email, created_at FROM admin_users ORDER BY created_at ASC');
+  const { rows } = await pool.query('SELECT id, email, created_at, last_login_at FROM admin_users ORDER BY created_at ASC');
   res.json(rows);
 });
 
@@ -132,7 +133,7 @@ router.post('/admin-users', requireAuth, authLimiter, async (req, res) => {
   const hash = await bcrypt.hash(password, 12);
   try {
     const inserted = await pool.query(
-      'INSERT INTO admin_users (email, password_hash) VALUES ($1, $2) RETURNING id, email, created_at',
+      'INSERT INTO admin_users (email, password_hash) VALUES ($1, $2) RETURNING id, email, created_at, last_login_at',
       [email, hash]
     );
     res.status(201).json(inserted.rows[0]);
