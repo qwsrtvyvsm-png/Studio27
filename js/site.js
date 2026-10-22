@@ -345,9 +345,28 @@
       '</div></section>';
   }
 
+  function shuffled(arr) {
+    var a = arr.slice();
+    for (var i = a.length - 1; i > 0; i--) {
+      var j = Math.floor(Math.random() * (i + 1));
+      var tmp = a[i]; a[i] = a[j]; a[j] = tmp;
+    }
+    return a;
+  }
+
   function renderModels(el) {
     var limit = parseInt(el.dataset.limit, 10) || MODELS.length;
     el.innerHTML = MODELS.slice(0, limit).map(modelCard).join('');
+  }
+
+  /* Continuous left-moving carousel of every lady, so no one is stuck
+     permanently off-screen. Cards are duplicated once so the strip can
+     loop seamlessly; a fresh shuffle on each load varies who leads. */
+  function renderModelsCarousel(el) {
+    if (!MODELS.length) { el.innerHTML = ''; return; }
+    var cards = shuffled(MODELS).map(modelCard);
+    var track = cards.concat(cards).join('');
+    el.innerHTML = '<div class="model-carousel__track">' + track + '</div>';
   }
 
   function renderRoster(el) {
@@ -450,6 +469,7 @@
     fillSiteFields();
     document.querySelectorAll('[data-hours]').forEach(renderHours);
     document.querySelectorAll('[data-models]').forEach(renderModels);
+    document.querySelectorAll('[data-models-carousel]').forEach(renderModelsCarousel);
     document.querySelectorAll('[data-roster]').forEach(renderRoster);
     document.querySelectorAll('[data-today]').forEach(renderToday);
     document.querySelectorAll('[data-rates]').forEach(renderRates);

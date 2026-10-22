@@ -13,6 +13,8 @@ const enquiriesRoutes = require('./routes/enquiries');
 const modelsRoutes = require('./routes/models');
 const divisionsRoutes = require('./routes/divisions');
 const settingsRoutes = require('./routes/settings');
+const staffRoutes = require('./routes/staff');
+const payslipsRoutes = require('./routes/payslips');
 
 const ROOT = path.join(__dirname, '..');
 const app = express();
@@ -43,6 +45,8 @@ app.use('/api/enquiries', enquiriesRoutes);
 app.use('/api/models', modelsRoutes);
 app.use('/api/divisions', divisionsRoutes);
 app.use('/api/settings', settingsRoutes);
+app.use('/api/staff', staffRoutes);
+app.use('/api/payslips', payslipsRoutes);
 
 /* ---------- Static site & admin dashboard ----------
    Explicit allowlist rather than serving the whole repo root, so

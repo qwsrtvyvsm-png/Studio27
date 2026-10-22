@@ -7,6 +7,8 @@
   var NAV = [
     { href: 'index.html', label: 'Dashboard', id: 'dashboard' },
     { href: 'models.html', label: 'Models & Roster', id: 'models' },
+    { href: 'staff.html', label: 'Staff Roster', id: 'staff' },
+    { href: 'payslips.html', label: 'Payslips', id: 'payslips' },
     { href: 'enquiries.html', label: 'Enquiries & Applications', id: 'enquiries' },
     { href: 'settings.html', label: 'Site Settings', id: 'settings' },
     { href: 'content.html', label: 'Site Content', id: 'content' }

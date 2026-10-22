@@ -3,8 +3,8 @@
   "configurations": [
     {
       "name": "studio27-static",
-      "runtimeExecutable": "python3",
-      "runtimeArgs": ["-m", "http.server", "8099"],
+      "runtimeExecutable": "node",
+      "runtimeArgs": [".claude/static-server.js", "8099"],
       "port": 8099
     }
   ]
