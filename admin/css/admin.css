@@ -177,6 +177,13 @@ body { background: var(--black); }
 .payslip-total { display: flex; justify-content: flex-end; gap: 14px; align-items: baseline; margin: 14px 0 22px; font-size: 14px; }
 .payslip-total strong { font-family: var(--font-display, inherit); font-size: 1.3rem; color: var(--gold-light); }
 
+.admin-user-card { border: 1px solid var(--line-soft); border-radius: 6px; padding: 16px 18px; margin-bottom: 14px; }
+.admin-user-card__head { display: flex; justify-content: space-between; align-items: flex-start; gap: 14px; margin-bottom: 14px; }
+.admin-user-card__head strong { display: block; color: var(--text); font-weight: 600; margin-bottom: 2px; }
+.admin-user-card__head button { background: none; border: 1px solid var(--line); color: var(--muted); border-radius: 4px; width: 32px; height: 32px; cursor: pointer; flex: none; }
+.perm-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(190px, 1fr)); gap: 10px 16px; margin-bottom: 14px; }
+.perm-grid .check { margin: 0; }
+
 @media (max-width: 820px) {
   .admin-shell { flex-direction: column; }
   .admin-sidebar { width: auto; flex-direction: row; align-items: center; overflow-x: auto; }

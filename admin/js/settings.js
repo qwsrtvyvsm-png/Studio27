@@ -234,46 +234,42 @@
     }
 
     function adminUsersFields() {
-      var header =
-        '<div class="rate-editor-row rate-editor-header" style="grid-template-columns:1.4fr auto 1.8fr auto">' +
-        '<span>Email</span><span>Last signed in</span><span>Access</span><span></span></div>';
-
       var rows = adminUsers
         .map(function (u) {
           var isSelf = u.id === accountId;
           if (u.isOwner) {
             return (
-              '<div class="rate-editor-row" style="grid-template-columns:1.4fr auto 1.8fr auto">' +
-              '<span>' + esc(u.email) + (isSelf ? ' <span class="hint">(you)</span>' : '') + '</span>' +
-              '<span class="hint">' + esc(formatLastLogin(u.last_login_at)) + '</span>' +
-              '<span class="hint">Owner &mdash; full access</span><span></span>' +
+              '<div class="admin-user-card">' +
+              '<div class="admin-user-card__head">' +
+              '<div><strong>' + esc(u.email) + (isSelf ? ' <span class="hint">(you)</span>' : '') + '</strong>' +
+              '<span class="hint">Last signed in: ' + esc(formatLastLogin(u.last_login_at)) + '</span></div>' +
+              '</div>' +
+              '<p class="hint">Owner &mdash; full access</p>' +
               '</div>'
             );
           }
           var checks = PERMS.map(function (p) {
             var checked = (u.permissions || []).indexOf(p.key) !== -1;
             return (
-              '<label class="check" style="margin-right:14px">' +
-              '<input type="checkbox" data-perm-for="' + u.id + '" value="' + p.key + '" ' + (checked ? 'checked' : '') + '> ' +
-              esc(p.label) +
-              '</label>'
+              '<label class="check"><input type="checkbox" data-perm-for="' + u.id + '" value="' + p.key + '" ' +
+              (checked ? 'checked' : '') + '> ' + esc(p.label) + '</label>'
             );
           }).join('');
           return (
-            '<div class="rate-editor-row" style="grid-template-columns:1.4fr auto 1.8fr auto;align-items:start">' +
-            '<span>' + esc(u.email) + '</span>' +
-            '<span class="hint">' + esc(formatLastLogin(u.last_login_at)) + '</span>' +
-            '<span style="display:flex;flex-wrap:wrap;gap:6px">' + checks +
-            '<button type="button" class="btn btn--small btn--ghost" data-save-permissions="' + u.id + '" style="margin-top:4px">Save access</button>' +
-            '</span>' +
-            '<button type="button" data-remove-admin="' + u.id + '">&times;</button>' +
+            '<div class="admin-user-card">' +
+            '<div class="admin-user-card__head">' +
+            '<div><strong>' + esc(u.email) + '</strong>' +
+            '<span class="hint">Last signed in: ' + esc(formatLastLogin(u.last_login_at)) + '</span></div>' +
+            '<button type="button" data-remove-admin="' + u.id + '" title="Remove">&times;</button>' +
+            '</div>' +
+            '<div class="perm-grid">' + checks + '</div>' +
+            '<button type="button" class="btn btn--small btn--ghost" data-save-permissions="' + u.id + '">Save access</button>' +
             '</div>'
           );
         })
         .join('');
 
       return (
-        header +
         '<div id="admin-users-list" style="margin-bottom:18px">' + rows + '</div>' +
         '<form id="add-admin-form" class="form">' +
         '<div class="field"><label for="a-email">Email</label><input id="a-email" name="email" type="email" autocomplete="off" required></div>' +
